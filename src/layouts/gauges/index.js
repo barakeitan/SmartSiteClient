@@ -60,8 +60,8 @@ function Gauges() {
     ts_memory:memory.ts_memory, memory_data:memory.memory_data}]);
 
   const fetchData = async () => {
-    const response = await fetch("http://localhost:8001");
-    const data = await response.json();
+    // const response = await fetch("http://localhost:8001");
+    const response = await fetch("http://localhost:3007/api/telemetry");    const data = await response.json();
     setResponse(data);
     console.log(data);
     setCpu({cpu_data: data.cpu, ts_cpu: data.ts_cpu});
