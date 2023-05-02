@@ -43,11 +43,11 @@ function Gauges() {
   const [disk, setDisk] = useState({disk_data: 75, ts_disk: ""});
   const [memory, setMemory] = useState({memory_data: 22, ts_memory: ""});
   const tbl_cols = useMemo(()=>[{Header:"CPU TimeStamp", accessor:"ts_cpu"},
-                            {Header:"CPU Usage", accessor:"cpu_data"},
+                            {Header:"CPU Usage", accessor:"cpu"},
                             {Header:"DISK TimeStamp", accessor:"ts_disk"},
-                            {Header:"DISK Usage", accessor:"disk_data"},
+                            {Header:"DISK Usage", accessor:"disk"},
                             {Header:"MEMORY TimeStamp", accessor:"ts_memory"},
-                            {Header:"MEMORY Usage", accessor:"memory_data"}],[]);
+                            {Header:"MEMORY Usage", accessor:"memory"}],[]);
   // const tbl_rows = useMemo(()=>[cpu.ts_cpu, cpu.cpu_data, 
   //                               disk.ts_disk, disk.disk_data, 
   //                               memory.ts_memory, memory.memory_data],
@@ -55,48 +55,54 @@ function Gauges() {
   //                               [cpu.ts_cpu, cpu.cpu_data, 
   //                               disk.ts_disk, disk.disk_data, 
   //                               memory.ts_memory, memory.memory_data]);
-  const [tbl_rows, setRows] = useState([{ts_cpu:cpu.ts_cpu, cpu_data:cpu.cpu_data, 
-    ts_disk:disk.ts_disk, disk_data:disk.disk_data, 
-    ts_memory:memory.ts_memory, memory_data:memory.memory_data}]);
+
+  const [tbl_rows, setRows] = useState([{ts_cpu:cpu.ts_cpu, cpu:cpu.cpu_data, 
+      ts_disk:disk.ts_disk, disk:disk.disk_data, 
+      ts_memory:memory.ts_memory, memory:memory.memory_data}]);
 
   const fetchData = async () => {
-    // const response = await fetch("http://localhost:8001");
-    const response = await fetch("http://localhost:3007/api/telemetry");    const data = await response.json();
+    //get the last line
+    const response = await fetch("http://localhost:3007/api/telemetry");
+    const data = await response.json();
     setResponse(data);
     console.log(data);
     setCpu({cpu_data: data.cpu, ts_cpu: data.ts_cpu});
     setDisk({disk_data: data.disk, ts_disk: data.ts_disk});
     setMemory({memory_data: data.memory, ts_memory: data.ts_memory});
 
-    setRows([{
-      cpu_data: "7.89",
-      ts_cpu: "[2023-03-28T19:56:49.3559798Z]",
-      disk_data: "3.2",
-      ts_disk: "[2023-03-28T19:56:49.3559798Z]",
-      memory_data: "10.1",
-      ts_memory: "[2023-03-28T19:56:49.3559798Z]"
-    },{
-      cpu_data: "3.21",
-      ts_cpu: "[2023-03-28T19:56:50.3559798Z]",
-      disk_data: "3.2",
-      ts_disk: "[2023-03-28T19:56:50.3559798Z]",
-      memory_data: "16.789",
-      ts_memory: "[2023-03-28T19:56:50.3559798Z]"
-    },{
-      cpu_data: "17.463",
-      ts_cpu: "[2023-03-28T19:57:49.3559798Z]",
-      disk_data: "1.77",
-      ts_disk: "[2023-03-28T19:57:49.3559798Z]",
-      memory_data: "9.486",
-      ts_memory: "[2023-03-28T19:57:49.3559798Z]"
-    },{
-      cpu_data: "4.786",
-      ts_cpu: "[2023-03-28T19:58:49.3559798Z]",
-      disk_data: "1.8",
-      ts_disk: "[2023-03-28T19:58:49.3559798Z]",
-      memory_data: "3.74",
-      ts_memory: "[2023-03-28T19:58:49.3559798Z]"
-    }]);
+    //get Table rows
+    const rows_response = await fetch("http://localhost:3007/api/updates_table");
+    const rows_data = await rows_response.json();
+    setRows(rows_data)
+    // setRows([{
+    //   cpu_data: "7.89",
+    //   ts_cpu: "[2023-03-28T19:56:49.3559798Z]",
+    //   disk_data: "3.2",
+    //   ts_disk: "[2023-03-28T19:56:49.3559798Z]",
+    //   memory_data: "10.1",
+    //   ts_memory: "[2023-03-28T19:56:49.3559798Z]"
+    // },{
+    //   cpu_data: "3.21",
+    //   ts_cpu: "[2023-03-28T19:56:50.3559798Z]",
+    //   disk_data: "3.2",
+    //   ts_disk: "[2023-03-28T19:56:50.3559798Z]",
+    //   memory_data: "16.789",
+    //   ts_memory: "[2023-03-28T19:56:50.3559798Z]"
+    // },{
+    //   cpu_data: "17.463",
+    //   ts_cpu: "[2023-03-28T19:57:49.3559798Z]",
+    //   disk_data: "1.77",
+    //   ts_disk: "[2023-03-28T19:57:49.3559798Z]",
+    //   memory_data: "9.486",
+    //   ts_memory: "[2023-03-28T19:57:49.3559798Z]"
+    // },{
+    //   cpu_data: "4.786",
+    //   ts_cpu: "[2023-03-28T19:58:49.3559798Z]",
+    //   disk_data: "1.8",
+    //   ts_disk: "[2023-03-28T19:58:49.3559798Z]",
+    //   memory_data: "3.74",
+    //   ts_memory: "[2023-03-28T19:58:49.3559798Z]"
+    // }]);
   };
 
   return (
@@ -157,7 +163,7 @@ function Gauges() {
             coloredShadow="info"
           >
             <MDTypography variant="h6" color="white">
-              Projects Table
+              Telemetry Data Table
             </MDTypography>
           </MDBox>
           <MDBox pt={3}>
