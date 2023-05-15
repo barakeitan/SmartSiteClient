@@ -1,4 +1,5 @@
 import { API } from '../config';
+import jwt_decode from 'jwt-decode';
 
 export const signup = (user) => {
   return fetch(`${API}/signup`, {
@@ -36,14 +37,22 @@ export const signin = (user) => {
 
 export const authenticate = (data, next) => {
   if (typeof window !== 'undefined') {
-    localStorage.setItem('jwt', JSON.stringify(data));
+    console.log("data: ", data);
+    localStorage.setItem('accessToken', JSON.stringify(data.accessToken));
+    localStorage.setItem('refreshToken', JSON.stringify(data.refreshToken));
+    localStorage.setItem('userData', JSON.stringify(data.user));
+
+
     next();
   }
 };
 
 export const signout = (next) => {
   if (typeof window !== 'undefined') {
-    localStorage.removeItem('jwt');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('userData');
+
     next();
     return fetch(`${API}/signout`, {
       method: 'GET',
@@ -55,13 +64,38 @@ export const signout = (next) => {
   }
 };
 
-export const isAuthenticated = () => {
+export const isAuthenticated = (key) => {
   if (typeof window === 'undefined') {
     return false;
   }
-  if (localStorage.getItem('jwt')) {
-    return JSON.parse(localStorage.getItem('jwt'));
+  if (localStorage.getItem(''+key)) {
+    return JSON.parse(localStorage.getItem(''+key));
   } else {
     return false;
   }
 };
+
+export const handleRefreshTokenValidation = async () => {
+        const accessToken = localStorage.getItem('accessToken');
+      
+        // Check if access token is expired
+        const { exp } = jwt_decode(accessToken);
+        if (Date.now() >= exp * 1000) {
+          const refreshToken = localStorage.getItem('refreshToken');
+          const response = await fetch(`${API}/refreshToken`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ refreshToken })
+          });
+          if (response.status === 401) {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            window.location.href = '/sign-in';
+            throw new Error("Your session expired. please sign in again");
+          }
+          const { accessToken } = await response.json();
+          localStorage.setItem('accessToken', accessToken);
+        }
+}

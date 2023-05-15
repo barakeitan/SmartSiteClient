@@ -30,13 +30,19 @@ import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatist
 
 import Gauge from "./components/gauge";
 import Icon from "@mui/material/Icon";
-
+import MDSnackbar from "components/MDSnackbar";
 
 import styles from './Gauges.module.css';
+
+import { handleRefreshTokenValidation } from '../../services/index';
 
 function Gauges() {
 
   const [response, setResponse] = useState(null);
+  const [errorSB, setErrorSB] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const closeErrorSB = () => setErrorSB(false);
+
   const [controller, dispatch] = useMaterialUIController();
   const { miniSidenav, transparentSidenav, whiteSidenav, darkMode, sidenavColor } = controller;
   const [cpu, setCpu] = useState({cpu_data: 70, ts_cpu: ""});
@@ -60,44 +66,70 @@ function Gauges() {
     ts_memory:memory.ts_memory, memory_data:memory.memory_data}]);
 
   const fetchData = async () => {
-    // const response = await fetch("http://localhost:8001");
-    const response = await fetch("http://localhost:3007/api/telemetry");    const data = await response.json();
-    setResponse(data);
-    console.log(data);
-    setCpu({cpu_data: data.cpu, ts_cpu: data.ts_cpu});
-    setDisk({disk_data: data.disk, ts_disk: data.ts_disk});
-    setMemory({memory_data: data.memory, ts_memory: data.ts_memory});
+    try{
+      // const response = await fetch("http://localhost:8001");
+      await handleRefreshTokenValidation();
+      const accessToken = localStorage.getItem('accessToken');
+      const response = await fetch("http://localhost:3007/api/telemetry", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      });    
+      const data = await response.json();
+      setResponse(data);
+      console.log(data);
+      setCpu({cpu_data: data.cpu, ts_cpu: data.ts_cpu});
+      setDisk({disk_data: data.disk, ts_disk: data.ts_disk});
+      setMemory({memory_data: data.memory, ts_memory: data.ts_memory});
 
-    setRows([{
-      cpu_data: "7.89",
-      ts_cpu: "[2023-03-28T19:56:49.3559798Z]",
-      disk_data: "3.2",
-      ts_disk: "[2023-03-28T19:56:49.3559798Z]",
-      memory_data: "10.1",
-      ts_memory: "[2023-03-28T19:56:49.3559798Z]"
-    },{
-      cpu_data: "3.21",
-      ts_cpu: "[2023-03-28T19:56:50.3559798Z]",
-      disk_data: "3.2",
-      ts_disk: "[2023-03-28T19:56:50.3559798Z]",
-      memory_data: "16.789",
-      ts_memory: "[2023-03-28T19:56:50.3559798Z]"
-    },{
-      cpu_data: "17.463",
-      ts_cpu: "[2023-03-28T19:57:49.3559798Z]",
-      disk_data: "1.77",
-      ts_disk: "[2023-03-28T19:57:49.3559798Z]",
-      memory_data: "9.486",
-      ts_memory: "[2023-03-28T19:57:49.3559798Z]"
-    },{
-      cpu_data: "4.786",
-      ts_cpu: "[2023-03-28T19:58:49.3559798Z]",
-      disk_data: "1.8",
-      ts_disk: "[2023-03-28T19:58:49.3559798Z]",
-      memory_data: "3.74",
-      ts_memory: "[2023-03-28T19:58:49.3559798Z]"
-    }]);
+      setRows([{
+        cpu_data: "7.89",
+        ts_cpu: "[2023-03-28T19:56:49.3559798Z]",
+        disk_data: "3.2",
+        ts_disk: "[2023-03-28T19:56:49.3559798Z]",
+        memory_data: "10.1",
+        ts_memory: "[2023-03-28T19:56:49.3559798Z]"
+      },{
+        cpu_data: "3.21",
+        ts_cpu: "[2023-03-28T19:56:50.3559798Z]",
+        disk_data: "3.2",
+        ts_disk: "[2023-03-28T19:56:50.3559798Z]",
+        memory_data: "16.789",
+        ts_memory: "[2023-03-28T19:56:50.3559798Z]"
+      },{
+        cpu_data: "17.463",
+        ts_cpu: "[2023-03-28T19:57:49.3559798Z]",
+        disk_data: "1.77",
+        ts_disk: "[2023-03-28T19:57:49.3559798Z]",
+        memory_data: "9.486",
+        ts_memory: "[2023-03-28T19:57:49.3559798Z]"
+      },{
+        cpu_data: "4.786",
+        ts_cpu: "[2023-03-28T19:58:49.3559798Z]",
+        disk_data: "1.8",
+        ts_disk: "[2023-03-28T19:58:49.3559798Z]",
+        memory_data: "3.74",
+        ts_memory: "[2023-03-28T19:58:49.3559798Z]"
+      }]);
+    } catch(e){
+      setErrorMsg(e.message);
+      setErrorSB(true);
+    }
+    
   };
+
+  const renderErrorSB = (
+    <MDSnackbar
+      color="error"
+      icon="warning"
+      title="Error occured"
+      content={errorMsg}
+      open={errorSB}
+      onClose={closeErrorSB}
+      close={closeErrorSB}
+      bgWhite
+    />
+  );
 
   return (
     <DashboardLayout>
@@ -170,6 +202,11 @@ function Gauges() {
             />
           </MDBox>
         </Card>
+      </MDBox>
+      <MDBox pt={2} px={2}>
+        <Grid item xs={12} sm={6} lg={3}>
+          {renderErrorSB}
+        </Grid>
       </MDBox>
     </DashboardLayout>
   );
