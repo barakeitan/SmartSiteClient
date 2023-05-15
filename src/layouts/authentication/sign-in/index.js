@@ -22,7 +22,6 @@ import { Link } from "react-router-dom";
 import Card from "@mui/material/Card";
 import Switch from "@mui/material/Switch";
 import Grid from "@mui/material/Grid";
-import MuiLink from "@mui/material/Link";
 
 // @mui icons
 import FacebookIcon from "@mui/icons-material/Facebook";
@@ -34,17 +33,60 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";
 import MDButton from "components/MDButton";
+import MDSnackbar from "components/MDSnackbar";
+
 
 // Authentication layout components
 import BasicLayout from "layouts/authentication/components/BasicLayout";
 
 // Images
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
+import { useNavigate } from "react-router-dom";
+
+import { signin, authenticate, isAuthenticated } from '../../../services/index';
 
 function Basic() {
+
+  const navigate = useNavigate();
   const [rememberMe, setRememberMe] = useState(false);
+  const [errorSB, setErrorSB] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(null);
 
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
+  const closeErrorSB = () => setErrorSB(false);
+  
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const { user } = isAuthenticated();
+
+  const clickSubmit = (event) => {
+    event.preventDefault(); // so that browser does not reload
+    signin({ email, password }).then((data) => {
+      if (data.error) {
+        setErrorMsg(data.error);
+        setErrorSB(true);
+      } else {
+        authenticate(data, () => {
+          navigate("/");
+        });
+      }
+    });
+  };
+
+  const renderErrorSB = (
+    <MDSnackbar
+      color="error"
+      icon="warning"
+      title="Failed to sign in"
+      content={errorMsg}
+      open={errorSB}
+      onClose={closeErrorSB}
+      close={closeErrorSB}
+      bgWhite
+    />
+  );
 
   return (
     <BasicLayout image={bgImage}>
@@ -63,31 +105,24 @@ function Basic() {
           <MDTypography variant="h4" fontWeight="medium" color="white" mt={1}>
             Sign in
           </MDTypography>
-          {/* <Grid container spacing={3} justifyContent="center" sx={{ mt: 1, mb: 2 }}>
-            <Grid item xs={2}>
-              <MDTypography component={MuiLink} href="#" variant="body1" color="white">
-                <FacebookIcon color="inherit" />
-              </MDTypography>
-            </Grid>
-            <Grid item xs={2}>
-              <MDTypography component={MuiLink} href="#" variant="body1" color="white">
-                <GitHubIcon color="inherit" />
-              </MDTypography>
-            </Grid>
-            <Grid item xs={2}>
-              <MDTypography component={MuiLink} href="#" variant="body1" color="white">
-                <GoogleIcon color="inherit" />
-              </MDTypography>
-            </Grid>
-          </Grid> */}
         </MDBox>
         <MDBox pt={4} pb={3} px={3}>
           <MDBox component="form" role="form">
             <MDBox mb={2}>
-              <MDInput type="email" label="Email" fullWidth />
+              <MDInput type="email" label="Email" fullWidth 
+              value={email}
+              onChange={(event) => {
+                console.log("event.target.value: " + event.target.value);
+                setEmail(event.target.value);
+              }}/>
             </MDBox>
             <MDBox mb={2}>
-              <MDInput type="password" label="Password" fullWidth />
+              <MDInput type="password" label="Password" fullWidth 
+              value={password}
+              onChange={(event) => {
+                console.log("event.target.value: " + event.target.value);
+                setPassword(event.target.value);
+              }}/>
             </MDBox>
             <MDBox display="flex" alignItems="center" ml={-1}>
               <Switch checked={rememberMe} onChange={handleSetRememberMe} />
@@ -102,7 +137,7 @@ function Basic() {
               </MDTypography>
             </MDBox>
             <MDBox mt={4} mb={1}>
-              <MDButton variant="gradient" color="info" fullWidth>
+              <MDButton variant="gradient" color="info" fullWidth onClick={clickSubmit}>
                 sign in
               </MDButton>
             </MDBox>
@@ -124,6 +159,11 @@ function Basic() {
           </MDBox>
         </MDBox>
       </Card>
+      <MDBox pt={2} px={2}>
+        <Grid item xs={12} sm={6} lg={3}>
+          {renderErrorSB}
+        </Grid>
+      </MDBox>
     </BasicLayout>
   );
 }
