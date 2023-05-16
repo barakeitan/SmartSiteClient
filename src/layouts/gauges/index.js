@@ -4,6 +4,13 @@ import { RadialGauge } from "react-canvas-gauges";
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
+// import DateTimePicker from '@mui/lab/DateTimePicker';
+// import TextField from '@mui/material/TextField';
+
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+// import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import { MuiPickersUtilsProvider, KeyboardDateTimePicker } from '@material-ui/pickers';
+// import {DateFnsUtils} from "@date-io/date-fns"
 
 
 // Material Dashboard 2 React components
@@ -23,21 +30,25 @@ import {
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
-import ReportsBarChart from "examples/Charts/BarCharts/ReportsBarChart";
-import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart";
-import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
 
 import Gauge from "./components/gauge";
 import Icon from "@mui/material/Icon";
 
 
 import styles from './Gauges.module.css';
+import MDInput from "components/MDInput";
+
 
 function Gauges() {
 
   const [response, setResponse] = useState(null);
   const [controller, dispatch] = useMaterialUIController();
+  // const [FromValue, setFrom] = React.useState(new Date('2014-08-18T21:11:54'));
+  const [FromValue, setFrom] = React.useState();
+  
+  const handleFromDateChange = (newValue) => {
+    setFrom(newValue);
+  };
   const { miniSidenav, transparentSidenav, whiteSidenav, darkMode, sidenavColor } = controller;
   const [cpu, setCpu] = useState({cpu_data: 70, ts_cpu: ""});
   const [disk, setDisk] = useState({disk_data: 75, ts_disk: ""});
@@ -62,7 +73,12 @@ function Gauges() {
 
   const fetchData = async () => {
     //get the last line
-    const response = await fetch("http://localhost:3007/api/telemetry");
+    const accessToken = localStorage.getItem('accessToken');
+    const response = await fetch("http://localhost:3007/api/telemetry", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
     const data = await response.json();
     setResponse(data);
     console.log(data);
@@ -71,7 +87,11 @@ function Gauges() {
     setMemory({memory_data: data.memory, ts_memory: data.ts_memory});
 
     //get Table rows
-    const rows_response = await fetch("http://localhost:3007/api/updates_table");
+    const rows_response = await fetch("http://localhost:3007/api/updates_table", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
     const rows_data = await rows_response.json();
     setRows(rows_data)
     // setRows([{
@@ -149,6 +169,38 @@ function Gauges() {
             </MDButton>
         </MDBox>
       </MDBox>
+
+      {/* Time pickers */}
+      <MDBox p={2} mt="auto">
+        {/* <MDBox>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <DateTimePicker
+                  label="Date&Time picker"
+                  inputFormat="MM/dd/yyyy"
+                  value={FromValue}
+                  onChange={handleFromDateChange}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+            </LocalizationProvider>
+            test text
+        </MDBox> */}
+        {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
+          <KeyboardDateTimePicker
+            // margin="normal"
+            // id="date-time-picker"
+            // label="Date and Time"
+            // format="yyyy-MM-dd'T'HH:mm:ss"
+            value={FromValue}
+            onChange={handleFromDateChange}
+            // KeyboardButtonProps={{
+            //   'aria-label': 'change date and time',
+            // }}
+          />
+        </MuiPickersUtilsProvider> */}
+        <MDInput type="datetime"  label="Start Time"/>
+        <MDInput type="datetime" label="End Time"  />
+      </MDBox>
+
       {/* Table */}
       <MDBox>
         <Card>
@@ -170,8 +222,8 @@ function Gauges() {
             <DataTable
               table={{ columns: tbl_cols, rows: tbl_rows }}
               isSorted={false}
-              entriesPerPage={false}
-              showTotalEntries={false}
+              entriesPerPage={{ defaultValue: 10, entries: [5, 10, 15, 20, 25] }}
+              showTotalEntries={true}
               noEndBorder
             />
           </MDBox>
