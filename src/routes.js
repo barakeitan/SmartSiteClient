@@ -38,6 +38,7 @@ Coded by www.creative-tim.com
 // Material Dashboard 2 React layouts
 import Dashboard from "layouts/dashboard";
 import Gauges from "layouts/gauges";
+import Sensors from "layouts/sensors";
 
 import Tables from "layouts/tables";
 import Billing from "layouts/billing";
@@ -46,6 +47,8 @@ import Notifications from "layouts/notifications";
 import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
+import SignOut from "layouts/authentication/sign-out";
+
 
 // @mui icons
 import Icon from "@mui/material/Icon";
@@ -61,11 +64,21 @@ const routes = [
   // },
   {
     type: "collapse",
-    name: "gauge",
+    SideNavVisable: true,
+    name: "gauges",
     key: "gauges",
-    icon: <Icon fontSize="small">gauges</Icon>,
+    icon: <Icon fontSize="small">speed</Icon>,
     route: "/gauges",
     component: <Gauges />,
+  },
+  {
+    type: "collapse",
+    SideNavVisable: true,
+    name: "sensors",
+    key: "sensors",
+    icon: <Icon fontSize="small">sensors</Icon>,
+    route: "/sensors",
+    component: <Sensors />,
   },
   // {
   //   type: "collapse",
@@ -109,6 +122,7 @@ const routes = [
   // },
   {
     type: "collapse",
+    SideNavVisable: false,
     name: "Sign In",
     key: "sign-in",
     icon: <Icon fontSize="small">login</Icon>,
@@ -117,11 +131,20 @@ const routes = [
   },
   {
     type: "collapse",
+    SideNavVisable: false,
     name: "Sign Up",
     key: "sign-up",
-    icon: <Icon fontSize="small">assignment</Icon>,
+    icon: <Icon fontSize="small">signup</Icon>,
     route: "/authentication/sign-up",
     component: <SignUp />,
+  },
+  {
+    type: "collapse",
+    SideNavVisable: true,
+    name: "Sign Out",
+    key: "sign-out",
+    icon: <Icon fontSize="small">logout</Icon>,
+    route: "/authentication/sign-in",
   },
 ];
 

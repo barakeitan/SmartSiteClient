@@ -44,6 +44,7 @@ import bgImage from "assets/images/bg-sign-in-basic.jpeg";
 import { useNavigate } from "react-router-dom";
 
 import { signin, authenticate, isAuthenticated } from '../../../services/index';
+// import WebSocketComponent from '../../../services/WebSocketProvider';
 
 function Basic() {
 
@@ -69,7 +70,8 @@ function Basic() {
         setErrorSB(true);
       } else {
         authenticate(data, () => {
-          navigate("/");
+          // WebSocketComponent(user);
+          navigate("/gauges");
         });
       }
     });

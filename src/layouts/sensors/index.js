@@ -28,15 +28,14 @@ import ReportsBarChart from "examples/Charts/BarCharts/ReportsBarChart";
 import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart";
 import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
 
-import Gauge from "./components/gauge";
+import Sensor from "./components/sensor/index";
 import Icon from "@mui/material/Icon";
 import MDSnackbar from "components/MDSnackbar";
 
-import styles from './Gauges.module.css';
 
 import { handleRefreshTokenValidation } from '../../services/index';
 
-function Gauges() {
+function Sensors() {
 
   const [response, setResponse] = useState(null);
   const [errorSB, setErrorSB] = useState(false);
@@ -48,19 +47,12 @@ function Gauges() {
   const [cpu, setCpu] = useState({cpu_data: 70, ts_cpu: ""});
   const [disk, setDisk] = useState({disk_data: 75, ts_disk: ""});
   const [memory, setMemory] = useState({memory_data: 22, ts_memory: ""});
-  const tbl_cols = useMemo(()=>[{Header:"CPU TimeStamp", accessor:"ts_cpu"},
-                            {Header:"CPU Usage", accessor:"cpu_data"},
-                            {Header:"DISK TimeStamp", accessor:"ts_disk"},
-                            {Header:"DISK Usage", accessor:"disk_data"},
-                            {Header:"MEMORY TimeStamp", accessor:"ts_memory"},
-                            {Header:"MEMORY Usage", accessor:"memory_data"}],[]);
-  // const tbl_rows = useMemo(()=>[cpu.ts_cpu, cpu.cpu_data, 
-  //                               disk.ts_disk, disk.disk_data, 
-  //                               memory.ts_memory, memory.memory_data],
-                                
-  //                               [cpu.ts_cpu, cpu.cpu_data, 
-  //                               disk.ts_disk, disk.disk_data, 
-  //                               memory.ts_memory, memory.memory_data]);
+  const tbl_cols = useMemo(()=>[{Header:"Sensor", accessor:"ts_cpu"},
+                            {Header:"Last data", accessor:"cpu_data"},
+                            {Header:"Date", accessor:"ts_disk"},
+                            {Header:"Melfunction", accessor:"disk_data"},
+                            {Header:"Level of risk", accessor:"ts_memory"},
+                            {Header:"Treated?", accessor:"memory_data"}],[]);
   const [tbl_rows, setRows] = useState([{ts_cpu:cpu.ts_cpu, cpu_data:cpu.cpu_data, 
     ts_disk:disk.ts_disk, disk_data:disk.disk_data, 
     ts_memory:memory.ts_memory, memory_data:memory.memory_data}]);
@@ -140,24 +132,24 @@ function Gauges() {
       <MDBox py={3}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6} lg={4}>
-              <Gauge
-                title="CPU Usage"
-                value={cpu.cpu_data}
-                value_ts={cpu.ts_cpu}
+              <Sensor
+                title='temperature'
+                label='temperature sensore'
+                severity='1'
               />
           </Grid>
           <Grid item xs={12} md={6} lg={4}>
-            <Gauge
-                  title="Disk Utilization"
-                  value={disk.disk_data}
-                  value_ts={disk.ts_disk}
+            <Sensor
+                title='light'
+                label='light sensore'
+                severity='2'
                 />
           </Grid>
           <Grid item xs={12} md={6} lg={4}>
-              <Gauge
-                  title="RAM Memory"
-                  value={memory.memory_data}
-                  value_ts={memory.ts_memory}
+              <Sensor
+                title='water'
+                label='water sensore'
+                severity='3'
                 />
           </Grid>
         </Grid>
@@ -189,7 +181,7 @@ function Gauges() {
             coloredShadow="info"
           >
             <MDTypography variant="h6" color="white">
-              Telemetry Table
+              Melfunction Table
             </MDTypography>
           </MDBox>
           <MDBox pt={3}>
@@ -212,4 +204,4 @@ function Gauges() {
   );
 }
 
-export default Gauges;
+export default Sensors;

@@ -63,11 +63,10 @@ function Cover() {
         setErrorMsg(data.error);
         setErrorSB(true);
       } else {
-        // WebSocketNotification(user);
         setName('');
         setEmail('');
         setPassword('');
-        navigate("/");
+        navigate("/authentication/sign-in");
 
       }
     }); // sending js object
