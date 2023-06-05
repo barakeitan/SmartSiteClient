@@ -133,23 +133,32 @@ function Sensors() {
         <Grid container spacing={3}>
           <Grid item xs={12} md={6} lg={4}>
               <Sensor
-                title='temperature'
+                title='Temperature'
                 label='temperature sensore'
                 severity='1'
+                minData='-4'
+                maxData='50'
+                currentValue='26'
               />
           </Grid>
           <Grid item xs={12} md={6} lg={4}>
             <Sensor
-                title='light'
-                label='light sensore'
+                title='Sound'
+                label='sound sensore'
                 severity='2'
+                minData='10'
+                maxData='100'
+                currentValue='50'
                 />
           </Grid>
           <Grid item xs={12} md={6} lg={4}>
               <Sensor
-                title='water'
+                title='Water'
                 label='water sensore'
                 severity='3'
+                minData='0'
+                maxData='15'
+                currentValue='9'
                 />
           </Grid>
         </Grid>

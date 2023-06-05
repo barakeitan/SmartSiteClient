@@ -39,7 +39,6 @@ import SidenavCollapse from "examples/Sidenav/SidenavCollapse";
 import SidenavRoot from "examples/Sidenav/SidenavRoot";
 import sidenavLogoLabel from "examples/Sidenav/styles/sidenav";
 
-import { signout } from '../../services/index';
 
 // Material Dashboard 2 React context
 import {
@@ -149,34 +148,6 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
               (darkMode && !transparentSidenav && whiteSidenav)
             }
           />
-        );
-      } else if (key === "sign-out") {
-        returnValue = (
-          <MDTypography
-            key={key}
-            color={textColor}
-            display="block"
-            variant="caption"
-            fontWeight="bold"
-            textTransform="uppercase"
-            onClick={signout}
-            pl={3}
-            mt={2}
-            mb={1}
-            ml={1}
-          >
-            {title}
-          </MDTypography>
-          // <MDBox
-          //   display={{ xs: "block", xl: "none" }}
-          //   position="absolute"
-          //   top={0}
-          //   right={0}
-          //   p={1.625}
-          //   onClick={signout}
-          //   sx={{ cursor: "pointer" }}
-          // ></MDBox>
-          // <MDBox onChange={() => signout()}></MDBox>
         );
       }
     }

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { RadialGauge } from "react-canvas-gauges";
 // import {Gauge}  from 'react-gauge';
 import GaugeChart from 'react-gauge-chart';
-import  { WebSocketProvider, useWebSocketMessages }  from '../../../../services/WebSocketProvider';
+import  { useWebSocketMessages }  from '../../../../services/WebSocketProvider';
 
 // @mui material components
 import Grid from "@mui/material/Grid";

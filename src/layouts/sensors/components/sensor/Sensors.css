@@ -1,0 +1,62 @@
+.filterContainer {
+    width: 192px;
+    height: 29px;
+    background-color: white;
+    border-radius: 6px;
+    border-color: fuchsia;
+    border-style: solid;
+    line-height: 10px;
+}
+
+.filterButton {
+    cursor: pointer;
+    height: 50px;
+    border-color: fuchsia;
+    width: -webkit-fill-available;
+    height: 26px;
+    font-size: 16px;
+    padding: 0px 10px;
+    background-color: transparent;
+    color: fuchsia;
+    border: none;
+}
+.week:hover{
+    background-color: fuchsia;
+    color: black;
+    border: none;
+}
+
+.month:hover{
+    background-color: fuchsia;
+    color: black;
+    border: none;
+}
+
+.year:hover{
+    background-color: fuchsia;
+    color: black;
+    border: none;
+}
+
+.sensorTitle {
+    color: gray;
+    font-size: inherit;
+}
+
+.currentValueTitle {
+    color: gray;
+    font-size: initial;
+}
+
+.titleContainer{
+    display: flex;
+    justify-content: space-between;
+    width: 450px;
+    padding-bottom: 15px;
+}
+
+.circle {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+}

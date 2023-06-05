@@ -13,10 +13,10 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // react-router-dom components
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 
 // @mui material components
 import Card from "@mui/material/Card";
@@ -60,7 +60,22 @@ function Basic() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const { user } = isAuthenticated();
+  // useEffect(() => {
+  //   const accessToken = localStorage.getItem('accessToken');
+  //   isAuthenticated(accessToken).then((data) => {
+  //     if (data.error) {
+  //       setErrorMsg(data.error);
+  //       setErrorSB(true);
+  //     } else {
+  //       if(data.isAuthenticate){
+  //         navigate('/gauges');
+  //       }
+  //     }
+  //   });
+    
+  // });
+
+  // const { user } = isAuthenticated();
 
   const clickSubmit = (event) => {
     event.preventDefault(); // so that browser does not reload

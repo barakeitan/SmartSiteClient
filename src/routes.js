@@ -35,91 +35,58 @@ Coded by www.creative-tim.com
   10. The `component` key is used to store the component of its route.
 */
 
-// Material Dashboard 2 React layouts
-import Dashboard from "layouts/dashboard";
 import Gauges from "layouts/gauges";
 import Sensors from "layouts/sensors";
 
-import Tables from "layouts/tables";
-import Billing from "layouts/billing";
-import RTL from "layouts/rtl";
-import Notifications from "layouts/notifications";
-import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
-import SignOut from "layouts/authentication/sign-out";
-
 
 // @mui icons
 import Icon from "@mui/material/Icon";
+import RoomList from "layouts/roomList/index";
+import SiteList from "layouts/siteList/index";
 
 const routes = [
-  // {
-  //   type: "collapse",
-  //   name: "Dashboard",
-  //   key: "dashboard",
-  //   icon: <Icon fontSize="small">dashboard</Icon>,
-  //   route: "/dashboard",
-  //   component: <Dashboard />,
-  // },
   {
     type: "collapse",
     SideNavVisable: true,
-    name: "gauges",
+    name: "Gauges",
     key: "gauges",
     icon: <Icon fontSize="small">speed</Icon>,
     route: "/gauges",
+    protectedRoute: true,
     component: <Gauges />,
   },
   {
     type: "collapse",
     SideNavVisable: true,
-    name: "sensors",
+    name: "Sensors",
     key: "sensors",
     icon: <Icon fontSize="small">sensors</Icon>,
     route: "/sensors",
+    protectedRoute: true,
     component: <Sensors />,
   },
-  // {
-  //   type: "collapse",
-  //   name: "Tables",
-  //   key: "tables",
-  //   icon: <Icon fontSize="small">table_view</Icon>,
-  //   route: "/tables",
-  //   component: <Tables />,
-  // },
-  // {
-  //   type: "collapse",
-  //   name: "Billing",
-  //   key: "billing",
-  //   icon: <Icon fontSize="small">receipt_long</Icon>,
-  //   route: "/billing",
-  //   component: <Billing />,
-  // },
-  // {
-  //   type: "collapse",
-  //   name: "RTL",
-  //   key: "rtl",
-  //   icon: <Icon fontSize="small">format_textdirection_r_to_l</Icon>,
-  //   route: "/rtl",
-  //   component: <RTL />,
-  // },
-  // {
-  //   type: "collapse",
-  //   name: "Notifications",
-  //   key: "notifications",
-  //   icon: <Icon fontSize="small">notifications</Icon>,
-  //   route: "/notifications",
-  //   component: <Notifications />,
-  // },
-  // {
-  //   type: "collapse",
-  //   name: "Profile",
-  //   key: "profile",
-  //   icon: <Icon fontSize="small">person</Icon>,
-  //   route: "/profile",
-  //   component: <Profile />,
-  // },
+  {
+    type: "collapse",
+    SideNavVisable: true,
+    name: "Room list",
+    key: "roomList",
+    icon: <Icon fontSize="small">list</Icon>,
+    route: "/roomList",
+    protectedRoute: true,
+    component: <RoomList />,
+  },
+  {
+    type: "collapse",
+    SideNavVisable: true,
+    name: "Site list",
+    key: "siteList",
+    icon: <Icon fontSize="small">business</Icon>,
+    route: "/siteList",
+    protectedRoute: true,
+    component: <SiteList />,
+  },
   {
     type: "collapse",
     SideNavVisable: false,
@@ -137,14 +104,6 @@ const routes = [
     icon: <Icon fontSize="small">signup</Icon>,
     route: "/authentication/sign-up",
     component: <SignUp />,
-  },
-  {
-    type: "collapse",
-    SideNavVisable: true,
-    name: "Sign Out",
-    key: "sign-out",
-    icon: <Icon fontSize="small">logout</Icon>,
-    route: "/authentication/sign-in",
   },
 ];
 
