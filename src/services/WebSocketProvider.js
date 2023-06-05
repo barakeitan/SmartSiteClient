@@ -10,16 +10,32 @@ const WebSocketProvider = ({ children }) => {
     readyState,
   } = useWebSocket(`ws://${process.env.WEBSOCKET_HOST || "localhost"}:${process.env.WEBSOCKET_PORT || "6835"}`);
 
-  // useEffect(() => {
-  //   if (lastJsonMessage) {
-  //     onMessageReceived(lastJsonMessage);
-  //   }
-  // }, [lastJsonMessage, onMessageReceived]);
+  useEffect(() => {
+    let socket = JSON.parse(sessionStorage.getItem('websocket'));
 
-  // const handleSendMessage = (message) => {
-  //   // const message = { cpu_data: 'hello', cpu_avg: 'Hello, WebSocket!', timestamp: };
-  //   sendJsonMessage(message);
-  // };
+    if (!socket) {
+      socket = new WebSocket(`ws://${process.env.WEBSOCKET_HOST || "localhost"}:${process.env.WEBSOCKET_PORT || "6835"}`);
+      sessionStorage.setItem('websocket', JSON.stringify(socket));
+    }
+
+    socket.onopen = () => {
+      console.log('WebSocket connection established');
+    };
+
+    socket.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      console.log('Received message:', message);
+    };
+
+    socket.onclose = () => {
+      console.log('WebSocket connection closed');
+      sessionStorage.removeItem('websocket');
+    };
+
+    return () => {
+      socket.close();
+    };
+  }, []);
 
   return (
     <WebSocketContext.Provider value={lastJsonMessage}>

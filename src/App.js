@@ -53,6 +53,8 @@ import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "co
 import brandWhite from "assets/images/logo-ct.png";
 import brandDark from "assets/images/logo-ct-dark.png";
 
+import ProtectedRoute from './components/ProtectedRoute';
+
 export default function App() {
   const [controller, dispatch] = useMaterialUIController();
   const {
@@ -109,18 +111,33 @@ export default function App() {
     document.scrollingElement.scrollTop = 0;
   }, [pathname]);
 
-  const getRoutes = (allRoutes) =>
-    allRoutes.map((route) => {
-      if (route.collapse) {
-        return getRoutes(route.collapse);
-      }
+  const getRoutes = (allRoutes) => {
+      // const accessToken = localStorage.getItem('accessToken');
+      return allRoutes.map((route) => {
+        if (route.collapse) {
+          return getRoutes(route.collapse);
+        }
 
-      if (route.route) {
-        return <Route exact path={route.route} element={route.component} key={route.key} />;
-      }
+        if (route.route) {
+          if(route.protectedRoute){
+            // return (
+            //   <ProtectedRoute
+            //     exact
+            //     path={route.route}
+            //     component={route.component}
+            //     accessToken={accessToken}
+            //   />
+            // );
+            return <Route exact path={route.route} 
+              element={<ProtectedRoute>{route.component}</ProtectedRoute>} key={route.key} />;
+          } else {
+            return <Route exact path={route.route} element={route.component} key={route.key} />;
+          }
+        }
 
-      return null;
+        return null;
     });
+  }
 
   const configsButton = (
     <MDBox
@@ -167,7 +184,7 @@ export default function App() {
         {layout === "vr" && <Configurator />}
         <Routes>
           {getRoutes(routes)}
-          <Route path="*" element={<Navigate to="/gauges" />} />
+          {/* <Route path="*" element={<Navigate to="/gauges" />} /> */}
         </Routes>
       </ThemeProvider>
     </CacheProvider>
@@ -191,7 +208,7 @@ export default function App() {
       {layout === "vr" && <Configurator />}
       <Routes>
         {getRoutes(routes)}
-        <Route path="*" element={<Navigate to="/authentication/sign-in" />} />
+        {/* <Route path="*" element={<Navigate to="/authentication/sign-in" />} /> */}
       </Routes>
     </ThemeProvider>
   );
