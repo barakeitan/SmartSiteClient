@@ -4,13 +4,6 @@ import { RadialGauge } from "react-canvas-gauges";
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-// import DateTimePicker from '@mui/lab/DateTimePicker';
-// import TextField from '@mui/material/TextField';
-
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
-// import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import { MuiPickersUtilsProvider, KeyboardDateTimePicker } from '@material-ui/pickers';
-// import {DateFnsUtils} from "@date-io/date-fns"
 
 
 // Material Dashboard 2 React components
@@ -30,20 +23,19 @@ import {
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
+import Footer from "examples/Footer";
+import ReportsBarChart from "examples/Charts/BarCharts/ReportsBarChart";
+import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart";
+import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
 
-import Gauge from "./components/gauge";
+import Sensor from "./components/sensor/index";
 import Icon from "@mui/material/Icon";
 import MDSnackbar from "components/MDSnackbar";
 
-import styles from './Gauges.module.css';
-import MDInput from "components/MDInput";
-
 
 import { handleRefreshTokenValidation } from '../../services/index';
 
-import { handleRefreshTokenValidation } from '../../services/index';
-
-function Gauges() {
+function Sensors() {
 
   const [response, setResponse] = useState(null);
   const [errorSB, setErrorSB] = useState(false);
@@ -51,36 +43,21 @@ function Gauges() {
   const closeErrorSB = () => setErrorSB(false);
 
   const [controller, dispatch] = useMaterialUIController();
-  // const [FromValue, setFrom] = React.useState(new Date('2014-08-18T21:11:54'));
-  const [FromValue, setFrom] = React.useState();
-  
-  const handleFromDateChange = (newValue) => {
-    setFrom(newValue);
-  };
   const { miniSidenav, transparentSidenav, whiteSidenav, darkMode, sidenavColor } = controller;
   const [cpu, setCpu] = useState({cpu_data: 70, ts_cpu: ""});
   const [disk, setDisk] = useState({disk_data: 75, ts_disk: ""});
   const [memory, setMemory] = useState({memory_data: 22, ts_memory: ""});
-  const tbl_cols = useMemo(()=>[{Header:"CPU TimeStamp", accessor:"ts_cpu"},
-                            {Header:"CPU Usage", accessor:"cpu"},
-                            {Header:"DISK TimeStamp", accessor:"ts_disk"},
-                            {Header:"DISK Usage", accessor:"disk"},
-                            {Header:"MEMORY TimeStamp", accessor:"ts_memory"},
-                            {Header:"MEMORY Usage", accessor:"memory"}],[]);
-  // const tbl_rows = useMemo(()=>[cpu.ts_cpu, cpu.cpu_data, 
-  //                               disk.ts_disk, disk.disk_data, 
-  //                               memory.ts_memory, memory.memory_data],
-                                
-  //                               [cpu.ts_cpu, cpu.cpu_data, 
-  //                               disk.ts_disk, disk.disk_data, 
-  //                               memory.ts_memory, memory.memory_data]);
-
-  const [tbl_rows, setRows] = useState([{ts_cpu:cpu.ts_cpu, cpu:cpu.cpu_data, 
-      ts_disk:disk.ts_disk, disk:disk.disk_data, 
-      ts_memory:memory.ts_memory, memory:memory.memory_data}]);
+  const tbl_cols = useMemo(()=>[{Header:"Sensor", accessor:"ts_cpu"},
+                            {Header:"Last data", accessor:"cpu_data"},
+                            {Header:"Date", accessor:"ts_disk"},
+                            {Header:"Melfunction", accessor:"disk_data"},
+                            {Header:"Level of risk", accessor:"ts_memory"},
+                            {Header:"Treated?", accessor:"memory_data"}],[]);
+  const [tbl_rows, setRows] = useState([{ts_cpu:cpu.ts_cpu, cpu_data:cpu.cpu_data, 
+    ts_disk:disk.ts_disk, disk_data:disk.disk_data, 
+    ts_memory:memory.ts_memory, memory_data:memory.memory_data}]);
 
   const fetchData = async () => {
-    //get the last line
     try{
       // const response = await fetch("http://localhost:8001");
       await handleRefreshTokenValidation();
@@ -97,19 +74,40 @@ function Gauges() {
       setDisk({disk_data: data.disk, ts_disk: data.ts_disk});
       setMemory({memory_data: data.memory, ts_memory: data.ts_memory});
 
-      //get Table rows
-      const rows_response = await fetch("http://localhost:3007/api/updates_table", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      });
-      const rows_data = await rows_response.json();
-      setRows(rows_data);
-    } 
-    catch(e){
+      setRows([{
+        cpu_data: "7.89",
+        ts_cpu: "[2023-03-28T19:56:49.3559798Z]",
+        disk_data: "3.2",
+        ts_disk: "[2023-03-28T19:56:49.3559798Z]",
+        memory_data: "10.1",
+        ts_memory: "[2023-03-28T19:56:49.3559798Z]"
+      },{
+        cpu_data: "3.21",
+        ts_cpu: "[2023-03-28T19:56:50.3559798Z]",
+        disk_data: "3.2",
+        ts_disk: "[2023-03-28T19:56:50.3559798Z]",
+        memory_data: "16.789",
+        ts_memory: "[2023-03-28T19:56:50.3559798Z]"
+      },{
+        cpu_data: "17.463",
+        ts_cpu: "[2023-03-28T19:57:49.3559798Z]",
+        disk_data: "1.77",
+        ts_disk: "[2023-03-28T19:57:49.3559798Z]",
+        memory_data: "9.486",
+        ts_memory: "[2023-03-28T19:57:49.3559798Z]"
+      },{
+        cpu_data: "4.786",
+        ts_cpu: "[2023-03-28T19:58:49.3559798Z]",
+        disk_data: "1.8",
+        ts_disk: "[2023-03-28T19:58:49.3559798Z]",
+        memory_data: "3.74",
+        ts_memory: "[2023-03-28T19:58:49.3559798Z]"
+      }]);
+    } catch(e){
       setErrorMsg(e.message);
       setErrorSB(true);
     }
+    
   };
 
   const renderErrorSB = (
@@ -134,24 +132,33 @@ function Gauges() {
       <MDBox py={3}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6} lg={4}>
-              <Gauge
-                title="CPU Usage"
-                value={cpu.cpu_data}
-                value_ts={cpu.ts_cpu}
+              <Sensor
+                title='Temperature'
+                label='temperature sensore'
+                severity='1'
+                minData='-4'
+                maxData='50'
+                currentValue='26'
               />
           </Grid>
           <Grid item xs={12} md={6} lg={4}>
-            <Gauge
-                  title="Disk Utilization"
-                  value={disk.disk_data}
-                  value_ts={disk.ts_disk}
+            <Sensor
+                title='Sound'
+                label='sound sensore'
+                severity='2'
+                minData='10'
+                maxData='100'
+                currentValue='50'
                 />
           </Grid>
           <Grid item xs={12} md={6} lg={4}>
-              <Gauge
-                  title="RAM Memory"
-                  value={memory.memory_data}
-                  value_ts={memory.ts_memory}
+              <Sensor
+                title='Water'
+                label='water sensore'
+                severity='3'
+                minData='0'
+                maxData='15'
+                currentValue='9'
                 />
           </Grid>
         </Grid>
@@ -169,38 +176,6 @@ function Gauges() {
             </MDButton>
         </MDBox>
       </MDBox>
-
-      {/* Time pickers */}
-      <MDBox p={2} mt="auto">
-        {/* <MDBox>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DateTimePicker
-                  label="Date&Time picker"
-                  inputFormat="MM/dd/yyyy"
-                  value={FromValue}
-                  onChange={handleFromDateChange}
-                  renderInput={(params) => <TextField {...params} />}
-                />
-            </LocalizationProvider>
-            test text
-        </MDBox> */}
-        {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
-          <KeyboardDateTimePicker
-            // margin="normal"
-            // id="date-time-picker"
-            // label="Date and Time"
-            // format="yyyy-MM-dd'T'HH:mm:ss"
-            value={FromValue}
-            onChange={handleFromDateChange}
-            // KeyboardButtonProps={{
-            //   'aria-label': 'change date and time',
-            // }}
-          />
-        </MuiPickersUtilsProvider> */}
-        <MDInput type="datetime"  label="Start Time"/>
-        <MDInput type="datetime" label="End Time"  />
-      </MDBox>
-
       {/* Table */}
       <MDBox>
         <Card>
@@ -215,15 +190,15 @@ function Gauges() {
             coloredShadow="info"
           >
             <MDTypography variant="h6" color="white">
-              Telemetry Table
+              Melfunction Table
             </MDTypography>
           </MDBox>
           <MDBox pt={3}>
             <DataTable
               table={{ columns: tbl_cols, rows: tbl_rows }}
               isSorted={false}
-              entriesPerPage={{ defaultValue: 10, entries: [5, 10, 15, 20, 25] }}
-              showTotalEntries={true}
+              entriesPerPage={false}
+              showTotalEntries={false}
               noEndBorder
             />
           </MDBox>
@@ -238,4 +213,4 @@ function Gauges() {
   );
 }
 
-export default Gauges;
+export default Sensors;

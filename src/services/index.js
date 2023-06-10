@@ -35,44 +35,64 @@ export const signin = (user) => {
     });
 };
 
+export const getAllRooms = (siteId) => {
+  return fetch(`${API}/room/${siteId}`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    }
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+export const getAllSites = () => {
+  return fetch(`${API}/site`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    }
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
 export const authenticate = (data, next) => {
   if (typeof window !== 'undefined') {
     console.log("data: ", data);
     localStorage.setItem('accessToken', JSON.stringify(data.accessToken));
     localStorage.setItem('refreshToken', JSON.stringify(data.refreshToken));
-    localStorage.setItem('userData', JSON.stringify(data.user));
-
-
+    // localStorage.setItem('userData', JSON.stringify(data.user));
     next();
   }
 };
 
-export const signout = (next) => {
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('userData');
+export const isAuthenticated = (accessToken) => {
 
-    next();
-    return fetch(`${API}/signout`, {
-      method: 'GET',
+  return fetch(`${API}/isAuthenticate`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`
+    }
+  })
+    .then((response) => {
+      return response.json();
     })
-      .then((response) => {
-        console.log('signout', response);
-      })
-      .catch((err) => console.log(err));
-  }
-};
-
-export const isAuthenticated = (key) => {
-  if (typeof window === 'undefined') {
-    return false;
-  }
-  if (localStorage.getItem(''+key)) {
-    return JSON.parse(localStorage.getItem(''+key));
-  } else {
-    return false;
-  }
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 export const handleRefreshTokenValidation = async () => {
@@ -90,9 +110,8 @@ export const handleRefreshTokenValidation = async () => {
             body: JSON.stringify({ refreshToken })
           });
           if (response.status === 401) {
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
-            window.location.href = '/sign-in';
+            localStorage.clear();
+            window.location.href = '/authentication/sign-in';
             throw new Error("Your session expired. please sign in again");
           }
           const { accessToken } = await response.json();
