@@ -45,6 +45,7 @@ import SignUp from "layouts/authentication/sign-up";
 import Icon from "@mui/material/Icon";
 import RoomList from "layouts/roomList/index";
 import SiteList from "layouts/siteList/index";
+import Dashboard from "layouts/dashboard";
 
 const routes = [
   {
@@ -53,7 +54,7 @@ const routes = [
     name: "Gauges",
     key: "gauges",
     icon: <Icon fontSize="small">speed</Icon>,
-    route: "/gauges",
+    route: "/:roomId/gauges",
     protectedRoute: true,
     component: <Gauges />,
   },
@@ -63,19 +64,29 @@ const routes = [
     name: "Sensors",
     key: "sensors",
     icon: <Icon fontSize="small">sensors</Icon>,
-    route: "/sensors",
+    route: "/:roomId/sensors",
     protectedRoute: true,
     component: <Sensors />,
   },
   {
     type: "collapse",
-    SideNavVisable: true,
+    SideNavVisable: false,
     name: "Room list",
     key: "roomList",
     icon: <Icon fontSize="small">list</Icon>,
-    route: "/roomList",
+    route: "/:siteId/rooms",
     protectedRoute: true,
     component: <RoomList />,
+  },
+  {
+    type: "collapse",
+    SideNavVisable: true,
+    name: "Dashboard",
+    key: "dashboard",
+    icon: <Icon fontSize="small">dashboard</Icon>,
+    route: "/dashboard",
+    protectedRoute: true,
+    component: <Dashboard />,
   },
   {
     type: "collapse",

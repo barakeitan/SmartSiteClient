@@ -58,7 +58,9 @@ function SiteList(props) {
     <DashboardLayout>
       <DashboardNavbar />
         <Grid container spacing={2}>
-            {sites.map((site, index) => (
+            {sites.length == 0 ? 
+            <div><h1>No sites yet</h1></div>
+            : sites.map((site, index) => (
                  <Grid item xs={4} key={index}>
                  {/* <Grid item xs={4}> */}
                     <Site

@@ -24,18 +24,26 @@ const generateChartData = (selectedFilter, minData, maxData, label) => {
     const currentDate = new Date();
     let startDate, endDate;
   
-    if (selectedFilter === 'Week') {
-      startDate = new Date(currentDate);
-      startDate.setDate(currentDate.getDate() - currentDate.getDay());
-  
-      endDate = new Date(currentDate);
-      endDate.setDate(startDate.getDate() + 5);
+    if (selectedFilter === 'Today') {
+        startDate = new Date(currentDate);
+        startDate.setHours(currentDate.getHours() - 23, 0, 0, 0);
+
+        // endDate = new Date(currentDate);
+        // endDate.setHours(23, 59, 59, 999);
+        endDate = new Date();
+        endDate.setHours(currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds());
+    } else if (selectedFilter === 'Week') {
+        startDate = new Date(currentDate);
+        startDate.setDate(currentDate.getDate() - currentDate.getDay());
+
+        endDate = new Date(currentDate);
+        endDate.setDate(startDate.getDate() + 5);
     } else if (selectedFilter === 'Month') {
-      startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-      endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+        startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+        endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
     } else if (selectedFilter === 'Year') {
-      startDate = new Date(currentDate.getFullYear(), 0, 1);
-      endDate = new Date(currentDate.getFullYear(), 11, 31);
+        startDate = new Date(currentDate.getFullYear(), 0, 1);
+        endDate = new Date(currentDate.getFullYear(), 11, 31);
     }
   
     const labels = [];
@@ -43,27 +51,40 @@ const generateChartData = (selectedFilter, minData, maxData, label) => {
     const current = new Date(startDate);
   
     while (current.getTime() <= endDate.getTime()) {
-      if (selectedFilter === 'Week') {
-        labels.push(current.toLocaleDateString());
-        const randomValue = Math.random() * (Number(maxData) - Number(minData)) + Number(minData);
-        data.push(randomValue);
-      } else if (selectedFilter === 'Month') {
-        labels.push(`${current.getMonth() + 1}/${current.getDate()}`);
-        const randomValue = Math.random() * (Number(maxData) - Number(minData)) + Number(minData);
-        data.push(randomValue);
-      } else if (selectedFilter === 'Year') {
-        labels.push(current.toLocaleDateString('default', { month: 'short' }));
-        const randomValue = Math.random() * (Number(maxData) - Number(minData)) + Number(minData);
-        data.push(randomValue);
-      }
-  
-      if (selectedFilter === 'Week') {
-        current.setDate(current.getDate() + 1);
-      } else if (selectedFilter === 'Month') {
-        current.setDate(current.getDate() + 1);
-      } else if (selectedFilter === 'Year') {
-        current.setMonth(current.getMonth() + 1);
-      }
+        if (selectedFilter === 'Today') {
+            // labels.push(current.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+            // const randomValue = Math.random() * (Number(maxData) - Number(minData)) + Number(minData);
+            // data.push(randomValue);
+            // current.setHours(current.getHours() + 1);
+
+        
+            // labels.push(current.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }));
+            // const randomValue = Math.random() * (Number(maxData) - Number(minData)) + Number(minData);
+            // data.push(randomValue);
+            // current.setHours(current.getHours() + 1);
+
+            const hours = current.getHours().toString().padStart(2, '0');
+            const minutes = current.getMinutes().toString().padStart(2, '0');
+            labels.push(`${hours}:${minutes}`);
+            const randomValue = Math.random() * (Number(maxData) - Number(minData)) + Number(minData);
+            data.push(randomValue);
+            current.setHours(current.getHours() + 1);
+        } else if (selectedFilter === 'Week') {
+            labels.push(current.toLocaleDateString());
+            const randomValue = Math.random() * (Number(maxData) - Number(minData)) + Number(minData);
+            data.push(randomValue);
+            current.setDate(current.getDate() + 1);
+        } else if (selectedFilter === 'Month') {
+            labels.push(`${current.getMonth() + 1}/${current.getDate()}`);
+            const randomValue = Math.random() * (Number(maxData) - Number(minData)) + Number(minData);
+            data.push(randomValue);
+            current.setDate(current.getDate() + 1);
+        } else if (selectedFilter === 'Year') {
+            labels.push(current.toLocaleDateString('default', { month: 'short' }));
+            const randomValue = Math.random() * (Number(maxData) - Number(minData)) + Number(minData);
+            data.push(randomValue);
+            current.setMonth(current.getMonth() + 1);
+        }
     }
   
     return {
@@ -268,6 +289,8 @@ function Sensor(props) {
             <div className="titleContainer">
                 <div className="filterContainer">
                     <div style={{"display": "flex"}}>
+                        <button className="filterButton today" onClick={() => handleFilterChange('Today')}>today</button>
+                        <div style={{"borderLeft": "2px solid fuchsia", "height": "26px"}}></div>
                         {/* <button className="filterButton week" style={weekStyle} onClick={() => handleFilterChange('Week')} onMouseEnter={() => handleMouse(true, "Week")} onMouseLeave={() => handleMouse(false, "Week")}>week</button> */}
                         <button className="filterButton week" onClick={() => handleFilterChange('Week')}>week</button>
                         <div style={{"borderLeft": "2px solid fuchsia", "height": "26px"}}></div>

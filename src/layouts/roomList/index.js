@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from 'react-router-dom';
 
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
@@ -16,9 +17,20 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import  { useWebSocketMessages }  from '../../services/WebSocketProvider';
 import Room from './components/room/index';
 import { API } from '../../config';
-import { getAllRooms } from '../../services/index';
+import { getAllRoomsBySiteId } from '../../services/index';
+
+const useStyles = makeStyles((theme) => ({
+    emptyRoomsGrid: {
+      display: "flex",
+      justifyContent: "center",
+      padding: "370px",
+    },
+  }));
 
 function RoomList(props) {
+
+    const { siteId } = useParams(); // Retrieve the siteId param from the URL
+    const classes = useStyles();
 
     const [rooms, setRooms] = useState([]);
     const [errorSB, setErrorSB] = useState(false);
@@ -29,7 +41,7 @@ function RoomList(props) {
         const fetchRooms = async () => {
             //647b456a07ab16da82a6a0cb
             //props.siteId
-            getAllRooms("647b456a07ab16da82a6a0cb").then((data) => {
+            getAllRoomsBySiteId(siteId).then((data) => {
                 if (data.error) {
                 setErrorMsg(data.error);
                 setErrorSB(true);
@@ -41,7 +53,7 @@ function RoomList(props) {
         };
     
         fetchRooms();
-      }, []);
+      }, [siteId]);
 
     const renderErrorSB = (
     <MDSnackbar
@@ -59,37 +71,18 @@ function RoomList(props) {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-        <Grid container spacing={2}>
-            {rooms.map((room, index) => (
+        <Grid container spacing={2} className={rooms.length === 0 ? classes.emptyRoomsGrid : ""}>
+            {rooms.length == 0 ? 
+            <div><h1>No rooms yet</h1></div>
+            : rooms.map((room, index) => (
                 <Grid item xs={4} key={index}>
                 {/* <Grid item xs={4}> */}
                     <Room
                         status={room.status}
                         imagePath={room.imagePath}
                         name={room.name}
+                        roomId={room._id}
                         />
-
-                        {/* <Room
-                            status="1"
-                            imagePath="https://www.dtech.com.sg/wp-content/uploads/2022/07/BI2_DataCenters.jpg"
-                            name="testRoom"
-                        /> */}
-
-                    {/* <Card className={classes.root}>
-                        <CardMedia
-                            className={classes.media}
-                            title="Paella dish"
-                        />
-                        <CardContent>
-                            <Typography gutterBottom variant="h5" component="h2">
-                            {room.name}
-                            </Typography>
-                            <Typography variant="body2" color="textSecondary" component="p">
-                            The CardMedia component sets a background image to cover available
-                            space.
-                            </Typography>
-                        </CardContent>
-                    </Card> */}
                 </Grid>
             ))}
         </Grid>

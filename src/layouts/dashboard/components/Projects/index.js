@@ -31,8 +31,8 @@ import DataTable from "examples/Tables/DataTable";
 // Data
 import data from "layouts/dashboard/components/Projects/data";
 
-function Projects() {
-  const { columns, rows } = data();
+function Projects(sensors) {
+  const { columns, rows } = data(sensors);
   const [menu, setMenu] = useState(null);
 
   const openMenu = ({ currentTarget }) => setMenu(currentTarget);
@@ -64,9 +64,9 @@ function Projects() {
       <MDBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
         <MDBox>
           <MDTypography variant="h6" gutterBottom>
-            Projects
+            Needs to pay attention
           </MDTypography>
-          <MDBox display="flex" alignItems="center" lineHeight={0}>
+          {/* <MDBox display="flex" alignItems="center" lineHeight={0}>
             <Icon
               sx={{
                 fontWeight: "bold",
@@ -79,14 +79,14 @@ function Projects() {
             <MDTypography variant="button" fontWeight="regular" color="text">
               &nbsp;<strong>30 done</strong> this month
             </MDTypography>
-          </MDBox>
+          </MDBox> */}
         </MDBox>
-        <MDBox color="text" px={2}>
+        {/* <MDBox color="text" px={2}>
           <Icon sx={{ cursor: "pointer", fontWeight: "bold" }} fontSize="small" onClick={openMenu}>
             more_vert
           </Icon>
-        </MDBox>
-        {renderMenu}
+        </MDBox> */}
+        {/* {renderMenu} */}
       </MDBox>
       <MDBox>
         <DataTable

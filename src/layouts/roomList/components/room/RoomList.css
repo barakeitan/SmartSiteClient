@@ -3,3 +3,9 @@
     height: 16px;
     border-radius: 50%;
 }
+
+.empty-rooms-grid {
+    display: flex;
+    justify-content: center;
+    padding: 400px;
+  }
