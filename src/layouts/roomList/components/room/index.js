@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from 'react-router-dom';
 
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
@@ -52,26 +53,28 @@ function Room(props) {
     }, [props]);
 
   return (
-    <Card className={classes.root}>
-        <CardMedia style={{borderTopLeftRadius: "10px", borderTopRightRadius: "10px"}}
-            className={classes.media}
-            image={props.imagePath}
-        />
-        {/* <div > */}
-            <CardContent>
-                <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                    <Typography gutterBottom variant="h5" component="h2">
-                        {props.name}
+    <Link to={`/${props.roomId}/sensors`}>
+        <Card className={classes.root}>
+            <CardMedia style={{borderTopLeftRadius: "10px", borderTopRightRadius: "10px"}}
+                className={classes.media}
+                image={props.imagePath}
+            />
+            {/* <div > */}
+                <CardContent>
+                    <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                        <Typography gutterBottom variant="h5" component="h2" style={{color: "black"}}>
+                            {props.name}
+                        </Typography>
+                        
+                        <div className="circle" style={{backgroundColor: statusColor, marginTop: "8px"}}></div>
+                    </div>
+                    <Typography variant="body2" color="textSecondary" component="p" style={{color: "black"}}>
+                        room
                     </Typography>
-                    
-                    <div className="circle" style={{backgroundColor: statusColor, marginTop: "8px"}}></div>
-                </div>
-                <Typography variant="body2" color="textSecondary" component="p">
-                    room
-                </Typography>
-            </CardContent>
-        {/* </div> */}
-    </Card>
+                </CardContent>
+            {/* </div> */}
+        </Card>
+    </Link>
   );
 }
 

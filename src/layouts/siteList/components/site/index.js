@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from 'react-router-dom';
 
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
@@ -33,12 +34,6 @@ function Site(props) {
     const [statusColor, setStatusColor] = useState('green');
     const classes = useStyles();
 
-    const navigateToRoomList =  () => {
-        return (
-            <RoomList siteId={props.siteId}/>
-        );
-    }
-
     useEffect(() => {
         switch(props.status){
             case "1":
@@ -57,26 +52,32 @@ function Site(props) {
     }, [props]);
 
   return (
-    <Card className={classes.root}>
-        <CardMedia style={{borderTopLeftRadius: "10px", borderTopRightRadius: "10px"}}
-            className={classes.media}
-            image={props.imagePath}
-        />
-        {/* <div > */}
-            <CardContent>
-                <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                    <Typography gutterBottom variant="h5" component="h2">
-                        {props.name}
-                    </Typography>
-                    <div className="circle" style={{backgroundColor: statusColor, marginTop: "8px"}}></div>
-                </div>
-                <Typography variant="body2" color="textSecondary" component="p">
-                    site
-                </Typography>
-            </CardContent>
-        {/* </div> */}
-    </Card>
+    <Link to={`/${props.siteId}/rooms`}>
+        <Card className={classes.root}>
+            {/* <div onClick={() => handleClick()}> */}
+                <CardMedia style={{borderTopLeftRadius: "10px", borderTopRightRadius: "10px"}}
+                    className={classes.media}
+                    image={props.imagePath}
+                />
+                {/* <div style={{backgroundColor: colorMode}}> */}
+                    <CardContent>
+                        <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                            {/* <h3>{"colorMode: " + colorMode}</h3> */}
+                            <Typography gutterBottom variant="h5" component="h2" style={{color: "black"}}>
+                                {props.name}
+                            </Typography>
+                            <div className="circle" style={{backgroundColor: statusColor, marginTop: "8px"}}></div>
+                        </div>
+                        <Typography variant="body2" color="textSecondary" component="p" style={{color: "black"}}>
+                            site
+                        </Typography>
+                    </CardContent>
+                {/* </div> */}
+            {/* </div> */}
+        </Card>
+    </Link>
   );
 }
+// style={{color: colorMode}}
 
 export default Site

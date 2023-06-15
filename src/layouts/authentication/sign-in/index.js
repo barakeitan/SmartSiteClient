@@ -86,7 +86,7 @@ function Basic() {
       } else {
         authenticate(data, () => {
           // WebSocketComponent(user);
-          navigate("/gauges");
+          navigate("/siteList");
         });
       }
     });
@@ -122,6 +122,9 @@ function Basic() {
           <MDTypography variant="h4" fontWeight="medium" color="white" mt={1}>
             Sign in
           </MDTypography>
+          <MDTypography display="block" variant="button" color="white" my={1}>
+            Enter your email and password to sign in
+          </MDTypography>
         </MDBox>
         <MDBox pt={4} pb={3} px={3}>
           <MDBox component="form" role="form">
@@ -142,7 +145,7 @@ function Basic() {
               }}/>
             </MDBox>
             <MDBox display="flex" alignItems="center" ml={-1}>
-              <Switch checked={rememberMe} onChange={handleSetRememberMe} />
+              {/* <Switch checked={rememberMe} onChange={handleSetRememberMe} />
               <MDTypography
                 variant="button"
                 fontWeight="regular"
@@ -151,7 +154,7 @@ function Basic() {
                 sx={{ cursor: "pointer", userSelect: "none", ml: -1 }}
               >
                 &nbsp;&nbsp;Remember me
-              </MDTypography>
+              </MDTypography> */}
             </MDBox>
             <MDBox mt={4} mb={1}>
               <MDButton variant="gradient" color="info" fullWidth onClick={clickSubmit}>

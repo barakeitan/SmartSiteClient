@@ -1,7 +1,7 @@
 .filterContainer {
-    width: 192px;
+    width: 249px;
     height: 29px;
-    background-color: white;
+    background-color: inherit;
     border-radius: 6px;
     border-color: fuchsia;
     border-style: solid;
@@ -20,7 +20,19 @@
     color: fuchsia;
     border: none;
 }
-.week:hover{
+
+.filterButton:hover{
+    background-color: fuchsia;
+    color: black;
+    border: none;
+}
+
+.active{
+    background-color: fuchsia;
+    color: black;
+    border: none;
+}
+/* .week:hover{
     background-color: fuchsia;
     color: black;
     border: none;
@@ -37,6 +49,11 @@
     color: black;
     border: none;
 }
+.today:hover{
+    background-color: fuchsia;
+    color: black;
+    border: none;
+} */
 
 .sensorTitle {
     color: gray;

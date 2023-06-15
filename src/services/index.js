@@ -35,8 +35,24 @@ export const signin = (user) => {
     });
 };
 
-export const getAllRooms = (siteId) => {
+export const getAllRoomsBySiteId = (siteId) => {
   return fetch(`${API}/room/${siteId}`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    }
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+export const getAllRooms = () => {
+  return fetch(`${API}/room`, {
     method: 'GET',
     headers: {
       Accept: 'application/json',
@@ -53,6 +69,22 @@ export const getAllRooms = (siteId) => {
 
 export const getAllSites = () => {
   return fetch(`${API}/site`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    }
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+export const getAllMalfunctionsByRoomId = (roomId) => {
+  return fetch(`${API}/malfunction/${roomId}`, {
     method: 'GET',
     headers: {
       Accept: 'application/json',

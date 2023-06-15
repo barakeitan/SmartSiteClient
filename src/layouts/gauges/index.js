@@ -1,6 +1,6 @@
 import React, { useState, useMemo} from "react";
 import { RadialGauge } from "react-canvas-gauges";
-
+import { Link, useParams } from 'react-router-dom';
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
@@ -41,7 +41,6 @@ import MDInput from "components/MDInput";
 
 import { handleRefreshTokenValidation } from '../../services/index';
 
-import { handleRefreshTokenValidation } from '../../services/index';
 
 function Gauges() {
 
@@ -49,6 +48,7 @@ function Gauges() {
   const [errorSB, setErrorSB] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const closeErrorSB = () => setErrorSB(false);
+  const { roomId } = useParams(); // Retrieve the roomId param from the URL
 
   const [controller, dispatch] = useMaterialUIController();
   // const [FromValue, setFrom] = React.useState(new Date('2014-08-18T21:11:54'));
@@ -82,7 +82,6 @@ function Gauges() {
   const fetchData = async () => {
     //get the last line
     try{
-      // const response = await fetch("http://localhost:8001");
       await handleRefreshTokenValidation();
       const accessToken = localStorage.getItem('accessToken');
       const response = await fetch("http://localhost:3007/api/telemetry", {
@@ -128,9 +127,23 @@ function Gauges() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Icon fontSize="medium" color="inherit">
-            {"leaderboard"}
-      </Icon>
+      <MDBox style={{display: "flex", justifyContent: "space-between"}}>
+        <Icon fontSize="medium" color="inherit">
+              {"leaderboard"}
+        </Icon>
+        <Link to={`/${roomId}/sensors`}>
+          <MDButton
+                component="button"
+                target="_blank"
+                rel="noreferrer"
+                variant="gradient"
+                color={sidenavColor}
+                fullWidth
+              >
+                see sensors page
+            </MDButton>
+        </Link>
+      </MDBox>
       <MDBox py={3}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6} lg={4}>
