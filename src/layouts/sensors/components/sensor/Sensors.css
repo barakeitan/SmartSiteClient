@@ -68,7 +68,7 @@
 .titleContainer{
     display: flex;
     justify-content: space-between;
-    width: 450px;
+    width: 25vw;
     padding-bottom: 15px;
 }
 

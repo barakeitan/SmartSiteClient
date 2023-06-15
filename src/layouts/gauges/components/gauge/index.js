@@ -3,6 +3,7 @@ import { RadialGauge } from "react-canvas-gauges";
 // import {Gauge}  from 'react-gauge';
 import GaugeChart from 'react-gauge-chart';
 import  { useWebSocketMessages }  from '../../../../services/WebSocketProvider';
+import ReactSpeedometer from "react-d3-speedometer"
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -29,8 +30,7 @@ function Gauge(props) {
   return (
     <MDBox mb={3}>
         <div className="gauge" style={{"display": "flex", "flexDirection": "column", "alignItems": "center"}}>
-        {/* <WebSocketComponent onMessageReceived={handleWebSocketMessage}/> */}
-        <RadialGauge
+        {/* <RadialGauge
           style={{"width": "50px !important",
             "height": "50px !important"}}
           units="%"
@@ -44,7 +44,49 @@ function Gauge(props) {
           colorMajorTicks="#000"
           fontValue="Arial"
           needleWidth={2}
-        />
+        /> */}
+     <ReactSpeedometer
+        width={400}
+        needleHeightRatio={0.7}
+        minValue={0}
+        maxValue={100}
+        value={props.value}
+        currentValueText={props.title + " : " + props.value}
+        segmentColors={['rgb(106, 215, 45)','rgb(174, 226, 40)','rgb(236, 219, 35)','rgb(246, 150, 30)','rgb(255, 71, 26)']}
+        customSegmentLabels={[
+          {
+            text: 'Very Good',
+            position: 'INSIDE',
+            color: '#555', //rgb(255, 71, 26)
+          },
+          {
+            text: 'Good',
+            position: 'INSIDE',
+            color: '#555',//rgb(246, 150, 30)
+          },
+          {
+            text: 'Ok',
+            position: 'INSIDE',
+            color: '#555',//rgb(236, 219, 35)
+            fontSize: '19px',
+          },
+          {
+            text: 'Bad',
+            position: 'INSIDE',
+            color: '#555',//rgb(174, 226, 40)
+          },
+          {
+            text: 'Very Bad',
+            position: 'INSIDE',
+            color: '#555',//rgb(106, 215, 45)
+          },
+        ]}
+        ringWidth={47}
+        needleTransitionDuration={3333}
+        needleTransition="easeElastic"
+        needleColor={'#90f2ff'}
+        textColor={'#d8dee9'}
+      />
         <br/>
         <div>{props.value_ts}</div>
         <br/>

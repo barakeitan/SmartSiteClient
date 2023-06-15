@@ -41,7 +41,6 @@ import MDInput from "components/MDInput";
 
 import { handleRefreshTokenValidation } from '../../services/index';
 
-
 function Gauges() {
 
   const [response, setResponse] = useState(null);
@@ -84,11 +83,13 @@ function Gauges() {
     try{
       await handleRefreshTokenValidation();
       const accessToken = localStorage.getItem('accessToken');
-      const response = await fetch("http://localhost:3007/api/telemetry", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      });    
+      const response = await fetch("http://localhost:3007/api/last"
+      // , {
+      //   headers: {
+      //     Authorization: `Bearer ${accessToken}`
+      //   }
+      // }
+      );    
       const data = await response.json();
       setResponse(data);
       console.log(data);
@@ -97,11 +98,13 @@ function Gauges() {
       setMemory({memory_data: data.memory, ts_memory: data.ts_memory});
 
       //get Table rows
-      const rows_response = await fetch("http://localhost:3007/api/updates_table", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      });
+      const rows_response = await fetch("http://localhost:3007/api/updates_table"
+      // , {
+      //   headers: {
+      //     Authorization: `Bearer ${accessToken}`
+      //   }
+      // }
+      );
       const rows_data = await rows_response.json();
       setRows(rows_data);
     } 

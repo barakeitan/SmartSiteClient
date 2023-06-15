@@ -31,7 +31,7 @@ export const signin = (user) => {
       return response.json();
     })
     .catch((err) => {
-      console.log(err);
+      console.log("err: " + err);
     });
 };
 
@@ -134,6 +134,7 @@ export const handleRefreshTokenValidation = async () => {
         const { exp } = jwt_decode(accessToken);
         if (Date.now() >= exp * 1000) {
           const refreshToken = localStorage.getItem('refreshToken');
+          console.log("refreshToken: " + refreshToken);
           const response = await fetch(`${API}/refreshToken`, {
             method: 'POST',
             headers: {
