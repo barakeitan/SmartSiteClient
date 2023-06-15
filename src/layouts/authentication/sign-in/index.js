@@ -60,6 +60,12 @@ function Basic() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  useEffect(() => {
+    // Clear localStorage here
+    localStorage.clear();
+  }, []); // The empty dependency array ensures the effect runs only once on mount
+
+
   // useEffect(() => {
   //   const accessToken = localStorage.getItem('accessToken');
   //   isAuthenticated(accessToken).then((data) => {
