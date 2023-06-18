@@ -31,6 +31,8 @@ const useStyles = makeStyles({
 function Room(props) {
 
     const lastJsonMessage = useWebSocketMessages();
+    console.log('Latest WebSocket message:', lastJsonMessage);
+
     const [statusColor, setStatusColor] = useState('green');
     const classes = useStyles();
 

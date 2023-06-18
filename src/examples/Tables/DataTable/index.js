@@ -47,6 +47,7 @@ function DataTable({
   pagination,
   isSorted,
   noEndBorder,
+  // enableSelectBox
 }) {
   const defaultValue = entriesPerPage.defaultValue ? entriesPerPage.defaultValue : 10;
   const entries = entriesPerPage.entries
@@ -147,7 +148,7 @@ function DataTable({
 
   return (
     <TableContainer sx={{ boxShadow: "none" }}>
-      {entriesPerPage || canSearch ? (
+      {entriesPerPage || canSearch /* || enableSelectBox*/ ? (
         <MDBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
           {entriesPerPage && (
             <MDBox display="flex" alignItems="center">
@@ -181,6 +182,19 @@ function DataTable({
               />
             </MDBox>
           )}
+          {/* { enableSelectBox &&
+            <Select
+            options={options}
+            isMulti
+            value={selectedOptions}
+            onChange={handleChange}
+            classNamePrefix="react-select"
+            closeMenuOnSelect={false}
+            components={{
+              IndicatorSeparator: () => null,
+            }}
+          />
+          } */}
         </MDBox>
       ) : null}
       <Table {...getTableProps()}>

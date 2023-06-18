@@ -17,7 +17,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import App from "App";
-import { WebSocketProvider } from '../src/services/WebSocketProvider'
+// import { WebSocketProvider } from '../src/services/WebSocketProvider'
 // import 'dotenv/config';
 
 
@@ -27,9 +27,9 @@ import { MaterialUIControllerProvider } from "context";
 ReactDOM.render(
   <BrowserRouter>
     <MaterialUIControllerProvider>
-    <WebSocketProvider>
-      <App />
-      </WebSocketProvider>
+      {/* <WebSocketProvider> */}
+        <App />
+      {/* </WebSocketProvider> */}
     </MaterialUIControllerProvider>
   </BrowserRouter>,
   document.getElementById("root")

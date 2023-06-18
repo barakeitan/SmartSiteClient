@@ -1,5 +1,6 @@
 import { API } from '../config';
 import jwt_decode from 'jwt-decode';
+import axios from 'axios';
 
 export const signup = (user) => {
   return fetch(`${API}/signup`, {
@@ -97,6 +98,83 @@ export const getAllMalfunctionsByRoomId = (roomId) => {
     .catch((err) => {
       console.log(err);
     });
+};
+
+export const getSensorsByRoomId = async (roomId) => {
+  try {
+    const response = await axios.get(`${API}/sensor/${roomId}`, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getSensorsBySensorId = async (sensorId) => {
+  try {
+    const response = await axios.get(`${API}/record/${sensorId}`, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getComputersByRoomId = (roomId) => {
+  try {
+    const response = axios.get(`${API}/getComputersList/${roomId}`, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getLastTelemetryData = async (telemetryEntityId) => {
+  try {
+    console.log("telemetryEntityId in getLastTelemetryData: " , telemetryEntityId);
+    const response = await axios.get(`${API}/lastTelemetryData/${telemetryEntityId}`, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getTelemetryTableUpdates = async (telemetryEntityId) => {
+  try {
+    console.log("telemetryEntityId in getTelemetryTableUpdates: " , telemetryEntityId);
+    const response = await axios.get(`${API}/tableUpdates/${telemetryEntityId}`, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export const authenticate = (data, next) => {

@@ -1,4 +1,4 @@
-import React, { useState, useMemo} from "react";
+import React, { useState, useMemo, useEffect} from "react";
 import { RadialGauge } from "react-canvas-gauges";
 import { Link, useParams } from 'react-router-dom';
 // @mui material components
@@ -19,6 +19,8 @@ import MDButton from "components/MDButton";
 import MDTypography from "components/MDTypography";
 
 import DataTable from "examples/Tables/DataTable";
+import { Menu, MenuItem } from '@mui/material';
+import Select from 'react-select';
 
 import {
   useMaterialUIController,
@@ -39,7 +41,7 @@ import styles from './Gauges.module.css';
 import MDInput from "components/MDInput";
 
 
-import { handleRefreshTokenValidation } from '../../services/index';
+import { handleRefreshTokenValidation, getComputersByRoomId, getLastTelemetryData, getTelemetryTableUpdates } from '../../services/index';
 
 function Gauges() {
 
@@ -48,15 +50,26 @@ function Gauges() {
   const [errorMsg, setErrorMsg] = useState(null);
   const closeErrorSB = () => setErrorSB(false);
   const { roomId } = useParams(); // Retrieve the roomId param from the URL
+  const [currentTelemetryEntity, setCurrentTelemetryEntity] = useState(null);
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  const options = [
+    { value: 'option1', label: 'Option 1' },
+    { value: 'option2', label: 'Option 2' },
+    { value: 'option3', label: 'Option 3' },
+    // Add more options as needed
+  ];
 
   const [controller, dispatch] = useMaterialUIController();
   // const [FromValue, setFrom] = React.useState(new Date('2014-08-18T21:11:54'));
-  const [FromValue, setFrom] = React.useState();
+  const [FromValue, setFrom] = useState();
   
   const handleFromDateChange = (newValue) => {
     setFrom(newValue);
   };
   const { miniSidenav, transparentSidenav, whiteSidenav, darkMode, sidenavColor } = controller;
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [computerList, setComputerList] = useState([]);
+
   const [cpu, setCpu] = useState({cpu_data: 70, ts_cpu: ""});
   const [disk, setDisk] = useState({disk_data: 75, ts_disk: ""});
   const [memory, setMemory] = useState({memory_data: 22, ts_memory: ""});
@@ -81,16 +94,16 @@ function Gauges() {
   const fetchData = async () => {
     //get the last line
     try{
-      await handleRefreshTokenValidation();
-      const accessToken = localStorage.getItem('accessToken');
-      const response = await fetch("http://localhost:3007/api/last"
+      // await handleRefreshTokenValidation();
+      // const accessToken = localStorage.getItem('accessToken');
+      // const response = await fetch("http://localhost:3007/api/last"
       // , {
       //   headers: {
       //     Authorization: `Bearer ${accessToken}`
       //   }
       // }
-      );    
-      const data = await response.json();
+      // );    
+      const data = await getLastTelemetryData();
       setResponse(data);
       console.log(data);
       setCpu({cpu_data: data.cpu, ts_cpu: data.ts_cpu});
@@ -98,20 +111,85 @@ function Gauges() {
       setMemory({memory_data: data.memory, ts_memory: data.ts_memory});
 
       //get Table rows
-      const rows_response = await fetch("http://localhost:3007/api/updates_table"
+      // const rows_response = await fetch("http://localhost:3007/api/updates_table"
       // , {
       //   headers: {
       //     Authorization: `Bearer ${accessToken}`
       //   }
       // }
-      );
-      const rows_data = await rows_response.json();
+      // );
+      const rows_data = await getTelemetryTableUpdates();
       setRows(rows_data);
     } 
     catch(e){
       setErrorMsg(e.message);
       setErrorSB(true);
     }
+  };
+
+  useEffect(() => {
+    try {
+      // get the list of computers in the specific room
+      const fetchComputerList = () => {
+        getComputersByRoomId(roomId).then((data) => {
+          if (data?.error) {
+            setErrorMsg(data.error);
+            setErrorSB(true);
+          } else {
+            console.log("computerList: " , data.data);
+            setComputerList(data.data);
+            setCurrentTelemetryEntity(data.data[0]);
+            fetchLastTelemetryData();
+            fetchTableUpdates();
+          }
+        }).catch((err) => {
+          console.log("err in gauges page: ", err);
+        });
+        
+      }
+  
+      fetchComputerList();
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
+  
+  useEffect(() => {
+    fetchLastTelemetryData();
+    fetchTableUpdates();
+  }, [currentTelemetryEntity]);
+
+  const fetchLastTelemetryData = async () => {
+    console.log("currentTelemetryEntity = " , currentTelemetryEntity);
+    const data = await getLastTelemetryData(currentTelemetryEntity?._id);
+    setResponse(data);
+    console.log(data);
+    setCpu({cpu_data: data.cpu, ts_cpu: data.ts_cpu});
+    setDisk({disk_data: data.disk, ts_disk: data.ts_disk});
+    setMemory({memory_data: data.memory, ts_memory: data.ts_memory});
+  }
+
+  const fetchTableUpdates = async () => {
+    const rows_data = await getTelemetryTableUpdates(currentTelemetryEntity?._id);
+    setRows(rows_data);
+  }
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleChange = (selectedItems) => {
+    setSelectedOptions(selectedItems);
+  };
+
+  const handleOptionSelect = (computer) => {
+    console.log("computer:::", computer)
+    setCurrentTelemetryEntity(computer);
+    setAnchorEl(null);
   };
 
   const renderErrorSB = (
@@ -130,6 +208,27 @@ function Gauges() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
+      <div>
+        <MDButton
+                component="button"
+                target="_blank"
+                rel="noreferrer"
+                variant="contained"
+                color={sidenavColor}
+                onClick={handleClick}
+              >
+                Choose Computer
+        </MDButton>
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+        >
+          {(computerList || [])?.map((computer, index) => (
+            <MenuItem key={index} onClick={() => { handleOptionSelect(computer); handleClose(); }}>{computer?.telemetryEntityName}</MenuItem>
+          ))}
+        </Menu>
+      </div>
       <MDBox style={{display: "flex", justifyContent: "space-between"}}>
         <Icon fontSize="medium" color="inherit">
               {"leaderboard"}
@@ -235,6 +334,17 @@ function Gauges() {
             </MDTypography>
           </MDBox>
           <MDBox pt={3}>
+          {/* <Select
+            options={options}
+            isMulti
+            value={selectedOptions}
+            onChange={handleChange}
+            classNamePrefix="react-select"
+            closeMenuOnSelect={false}
+            components={{
+              IndicatorSeparator: () => null,
+            }}
+          /> */}
             <DataTable
               table={{ columns: tbl_cols, rows: tbl_rows }}
               isSorted={false}

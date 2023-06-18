@@ -126,8 +126,8 @@ function Dashboard() {
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
-          {sites.map((site, index) => (
-            <MenuItem onClick={() => { handleOptionSelect(site); handleClose(); }}>{site.name}</MenuItem>
+          {sites?.map((site, index) => (
+            <MenuItem key={index} onClick={() => { handleOptionSelect(site); handleClose(); }}>{site?.name}</MenuItem>
           ))}
         </Menu>
       </div>

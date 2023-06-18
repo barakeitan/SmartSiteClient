@@ -34,7 +34,7 @@ import Icon from "@mui/material/Icon";
 import MDSnackbar from "components/MDSnackbar";
 
 
-import { getAllMalfunctionsByRoomId, handleRefreshTokenValidation } from '../../services/index';
+import { getAllMalfunctionsByRoomId, getSensorsByRoomId, handleRefreshTokenValidation } from '../../services/index';
 
 function Sensors() {
 
@@ -46,21 +46,17 @@ function Sensors() {
   const [controller, dispatch] = useMaterialUIController();
   const { miniSidenav, transparentSidenav, whiteSidenav, darkMode, sidenavColor } = controller;
   const { roomId } = useParams(); // Retrieve the roomId param from the URL
-  const [malfunctionsList, setMalfunctionsList] = useState([{}]);
+  // const [malfunctionsList, setMalfunctionsList] = useState([{}]);
+  const [sensorsList, setSensorsList] = useState([]);
 
-  // const [cpu, setCpu] = useState({cpu_data: 70, ts_cpu: "2334"});
-  // const [disk, setDisk] = useState({disk_data: 75, ts_disk: ""});
-  // const [memory, setMemory] = useState({memory_data: 22, ts_memory: ""});
-  const tbl_cols = useMemo(()=>[{Header:"Sensor", accessor:"ts_cpu"},
-                            {Header:"Last data", accessor:"cpu_data"},
-                            {Header:"Date", accessor:"ts_disk"},
-                            {Header:"Severity", accessor:"disk_data"},
-                            {Header:"Description", accessor:"ts_memory"},
-                            {Header:"Treated?", accessor:"memory_data"}],[]);
-  const [tbl_rows, setRows] = useState([{}])
-  // const [tbl_rows, setRows] = useState([{ts_cpu:cpu.ts_cpu, cpu_data:cpu.cpu_data, 
-  //   ts_disk:disk.ts_disk, disk_data:disk.disk_data, 
-  //   ts_memory:memory.ts_memory, memory_data:memory.memory_data}]);
+  const tbl_cols = useMemo(() => [
+        { Header: "Sensor", accessor: "sensorName" },
+        { Header: "Last data", accessor: "recent_data" },
+        { Header: "Date", accessor: "date" },
+        { Header: "Severity", accessor: "severity" },
+        { Header: "Description", accessor: "message" }
+      ], []);
+  const [tbl_rows, setRows] = useState([{}]);
 
   const fetchData = async () => {
     //try{
@@ -114,16 +110,41 @@ function Sensors() {
     
   };
 
-  useEffect(() => {
+  useEffect(async () => {
     const fetchMalfunctions = async () => {
       getAllMalfunctionsByRoomId(roomId).then((data) => {
-            if (data.error) {
+            if (data?.error) {
             setErrorMsg(data.error);
             setErrorSB(true);
             } else {
                 console.log("MalfunctionsList data: " + data);
-                setMalfunctionsList(data);
-                // setRows([{
+                data.sort((a, b) => {
+                  const dateA = new Date(a.date);
+                  const dateB = new Date(b.date);
+                  return dateB - dateA;
+                });
+                // setMalfunctionsList(data);
+                const rows = data.map((malfunction) => ({
+                  sensorName: malfunction?.sensorId?.sensorTypeId?.name ?? "",
+                  recent_data: malfunction?.recent_data ?? "",
+                  date: malfunction?.date ?? "",
+                  severity: malfunction?.severity ?? "",
+                  description: malfunction?.message ?? ""
+                }));
+                setRows(rows);
+            }
+        });
+    };
+    let sensorData = (await getSensorsByRoomId(roomId)).filter((sensor) => {
+      return sensor.sensorTypeId.name === "Temperature Sensor" || sensor.sensorTypeId.name === "Sound Sensor" ||
+             sensor.sensorTypeId.name === "Water Sensor";
+    });
+    setSensorsList(sensorData);
+    fetchMalfunctions();
+  }, []);
+
+
+  // setRows([{
                 //   cpu_data: "7.89",
                 //   ts_cpu: "[2023-03-28T19:56:49.3559798Z]",
                 //   disk_data: "3.2",
@@ -152,12 +173,6 @@ function Sensors() {
                 //   memory_data: "3.74",
                 //   ts_memory: "[2023-03-28T19:58:49.3559798Z]"
                 // }]);
-            }
-        });
-    };
-
-    fetchMalfunctions();
-  }, []);
 
   const renderErrorSB = (
     <MDSnackbar
@@ -193,38 +208,53 @@ function Sensors() {
         </Link>
       </MDBox>
       <MDBox py={3}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6} lg={4}>
-              <Sensor
-                title='Temperature'
-                label='temperature sensore'
-                severity='1'
-                minData='-4'
-                maxData='50'
-                currentValue='26'
-              />
-          </Grid>
-          <Grid item xs={12} md={6} lg={4}>
-            <Sensor
-                title='Sound'
-                label='sound sensore'
-                severity='2'
-                minData='10'
-                maxData='100'
-                currentValue='50'
+        {
+          sensorsList ?
+          <Grid container spacing={sensorsList.length}>
+            {sensorsList.map((sensor, index) => (
+              <Grid item xs={12} md={6} lg={4} key={index}>
+                <Sensor
+                  id={sensor._id}
+                  label={sensor.sensorTypeId.name}
+                  severity={sensor.status}
+                  minData={sensor.sensorTypeId.minValue}
+                  maxData={sensor.sensorTypeId.minValue}
+                  currentValue={sensor.sensorData}
                 />
-          </Grid>
-          <Grid item xs={12} md={6} lg={4}>
-              <Sensor
-                title='Water'
-                label='water sensore'
-                severity='3'
-                minData='0'
-                maxData='15'
-                currentValue='9'
+              </Grid>
+            ))}
+            {/* <Grid item xs={12} md={6} lg={4}>
+                <Sensor
+                  title='Temperature'
+                  label='temperature sensore'
+                  severity='1'
+                  minData='-4'
+                  maxData='50'
+                  currentValue='26'
                 />
-          </Grid>
-        </Grid>
+            </Grid>
+            <Grid item xs={12} md={6} lg={4}>
+              <Sensor
+                  title='Sound'
+                  label='sound sensore'
+                  severity='2'
+                  minData='10'
+                  maxData='100'
+                  currentValue='50'
+                  />
+            </Grid>
+            <Grid item xs={12} md={6} lg={4}>
+                <Sensor
+                  title='Water'
+                  label='water sensore'
+                  severity='3'
+                  minData='0'
+                  maxData='15'
+                  currentValue='9'
+                  />
+            </Grid> */}
+          </Grid> : null
+        }
         <br></br>
         <MDBox p={2} mt="auto">
           <MDButton
@@ -254,15 +284,15 @@ function Sensors() {
             coloredShadow="info"
           >
             <MDTypography variant="h6" color="white">
-              Melfunction Table
+              Malfunction Table
             </MDTypography>
           </MDBox>
           <MDBox pt={3}>
             <DataTable
               table={{ columns: tbl_cols, rows: tbl_rows }}
               isSorted={false}
-              entriesPerPage={false}
-              showTotalEntries={false}
+              entriesPerPage={{ defaultValue: 10, entries: [5, 10, 15, 20, 25] }}
+              showTotalEntries={true}
               noEndBorder
             />
           </MDBox>

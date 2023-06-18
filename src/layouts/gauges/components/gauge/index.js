@@ -15,6 +15,8 @@ import MDBox from "components/MDBox";
 function Gauge(props) {
 
   const lastJsonMessage = useWebSocketMessages();
+  console.log('Latest WebSocket message:', lastJsonMessage);
+
 
   useEffect(() => {
     console.log('WebSocket message:', lastJsonMessage);
