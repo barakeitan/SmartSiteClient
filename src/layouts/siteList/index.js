@@ -25,21 +25,28 @@ function SiteList(props) {
     const [errorMsg, setErrorMsg] = useState(null);
     const closeErrorSB = () => setErrorSB(false);
 
+    const fetchSites = () => {
+        getAllSites().then((data) => {
+            if (data.error) {
+            setErrorMsg(data.error);
+            setErrorSB(true);
+            } else {
+                console.log("siteList data: " + data);
+                setSites(data);
+            }
+        });
+    };
+
     useEffect(() => {
-        const fetchSites = async () => {
-            getAllSites().then((data) => {
-                if (data.error) {
-                setErrorMsg(data.error);
-                setErrorSB(true);
-                } else {
-                    console.log("siteList data: " + data);
-                    setSites(data);
-                }
-            });
-        };
-    
+    fetchSites();
+    }, []);
+
+    useEffect(() => {
+    const inret = setInterval(async() => {
         fetchSites();
-      }, []);
+    }, 3000);
+    return () => clearInterval(inret); //This is important
+    }, []);
 
     const renderErrorSB = (
     <MDSnackbar

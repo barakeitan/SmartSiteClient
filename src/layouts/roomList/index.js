@@ -37,23 +37,28 @@ function RoomList(props) {
     const [errorMsg, setErrorMsg] = useState(null);
     const closeErrorSB = () => setErrorSB(false);
 
+    const fetchRooms = () => {
+      getAllRoomsBySiteId(siteId).then((data) => {
+          if (data.error) {
+          setErrorMsg(data.error);
+          setErrorSB(true);
+          } else {
+              console.log("roomList data: " + data);
+              setRooms(data);
+          }
+      });
+    };
+
     useEffect(() => {
-        const fetchRooms = async () => {
-            //647b456a07ab16da82a6a0cb
-            //props.siteId
-            getAllRoomsBySiteId(siteId).then((data) => {
-                if (data.error) {
-                setErrorMsg(data.error);
-                setErrorSB(true);
-                } else {
-                    console.log("roomList data: " + data);
-                    setRooms(data);
-                }
-            });
-        };
-    
         fetchRooms();
       }, [siteId]);
+
+    useEffect(() => {
+    const inret = setInterval(async() => {
+      fetchRooms();
+    }, 3000);
+    return () => clearInterval(inret); //This is important
+    }, [siteId]);
 
     const renderErrorSB = (
     <MDSnackbar

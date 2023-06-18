@@ -153,7 +153,7 @@ function Sensors() {
       });
       setSensorsList(sensorData);
       fetchMalfunctions();
-    }, 6000);
+    }, 3000);
   return () => clearInterval(inret); //This is important
   }, []);
 

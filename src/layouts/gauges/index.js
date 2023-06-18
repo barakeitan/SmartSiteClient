@@ -164,7 +164,7 @@ function Gauges() {
         fetchLastTelemetryData();
         fetchTableUpdates();
       }
-    }, 6000);
+    }, 3000);
   return () => clearInterval(inret); //This is important
   }, [currentTelemetryEntity]);
 

@@ -250,6 +250,7 @@ function Sensor(props) {
   );
 
   const options = {
+    animation: false,
     responsive: true,
     plugins: {
       legend: {

@@ -53,31 +53,33 @@ function Gauge(props) {
         maxValue={100}
         value={props.value}
         currentValueText={props.title + " : " + props.value}
-        segmentColors={['rgb(106, 215, 45)','rgb(174, 226, 40)','rgb(236, 219, 35)','rgb(246, 150, 30)','rgb(255, 71, 26)']}
+        customSegmentStops={[0,75,90,100]}
+        // segmentColors={['rgb(106, 215, 45)','rgb(174, 226, 40)','rgb(236, 219, 35)','rgb(246, 150, 30)','rgb(255, 71, 26)']}
+        segmentColors={['rgb(106, 215, 45)', 'rgb(236, 219, 35)','rgb(255, 71, 26)']}
         customSegmentLabels={[
+          // {
+          //   text: 'Very Good',
+          //   position: 'INSIDE',
+          //   color: '#555', //rgb(255, 71, 26)
+          // },
           {
-            text: 'Very Good',
-            position: 'INSIDE',
-            color: '#555', //rgb(255, 71, 26)
-          },
-          {
-            text: 'Good',
+            text: 'Normal',
             position: 'INSIDE',
             color: '#555',//rgb(246, 150, 30)
           },
+          // {
+          //   text: 'Ok',
+          //   position: 'INSIDE',
+          //   color: '#555',//rgb(236, 219, 35)
+          //   fontSize: '19px',
+          // },
           {
-            text: 'Ok',
-            position: 'INSIDE',
-            color: '#555',//rgb(236, 219, 35)
-            fontSize: '19px',
-          },
-          {
-            text: 'Bad',
+            text: 'Warning',
             position: 'INSIDE',
             color: '#555',//rgb(174, 226, 40)
           },
           {
-            text: 'Very Bad',
+            text: 'Danger',
             position: 'INSIDE',
             color: '#555',//rgb(106, 215, 45)
           },
