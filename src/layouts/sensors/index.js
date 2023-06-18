@@ -110,37 +110,51 @@ function Sensors() {
     
   };
 
+  const fetchMalfunctions = () => {
+    getAllMalfunctionsByRoomId(roomId).then((data) => {
+          if (data?.error) {
+          setErrorMsg(data.error);
+          setErrorSB(true);
+          } else {
+              console.log("MalfunctionsList data: " + data);
+              data.sort((a, b) => {
+                const dateA = new Date(a.date);
+                const dateB = new Date(b.date);
+                return dateB - dateA;
+              });
+              // setMalfunctionsList(data);
+              const rows = data.map((malfunction) => ({
+                sensorName: malfunction?.sensorId?.sensorTypeId?.name ?? "",
+                recent_data: malfunction?.recent_data ?? "",
+                date: malfunction?.date ?? "",
+                severity: malfunction?.severity ?? "",
+                description: malfunction?.message ?? ""
+              }));
+              setRows(rows);
+          }
+      });
+  };
+
   useEffect(async () => {
-    const fetchMalfunctions = async () => {
-      getAllMalfunctionsByRoomId(roomId).then((data) => {
-            if (data?.error) {
-            setErrorMsg(data.error);
-            setErrorSB(true);
-            } else {
-                console.log("MalfunctionsList data: " + data);
-                data.sort((a, b) => {
-                  const dateA = new Date(a.date);
-                  const dateB = new Date(b.date);
-                  return dateB - dateA;
-                });
-                // setMalfunctionsList(data);
-                const rows = data.map((malfunction) => ({
-                  sensorName: malfunction?.sensorId?.sensorTypeId?.name ?? "",
-                  recent_data: malfunction?.recent_data ?? "",
-                  date: malfunction?.date ?? "",
-                  severity: malfunction?.severity ?? "",
-                  description: malfunction?.message ?? ""
-                }));
-                setRows(rows);
-            }
-        });
-    };
+    
     let sensorData = (await getSensorsByRoomId(roomId)).filter((sensor) => {
       return sensor.sensorTypeId.name === "Temperature Sensor" || sensor.sensorTypeId.name === "Sound Sensor" ||
-             sensor.sensorTypeId.name === "Water Sensor";
+             sensor.sensorTypeId.name === "Water Level Sensor";
     });
     setSensorsList(sensorData);
     fetchMalfunctions();
+  }, []);
+
+  useEffect(() => {
+    const inret = setInterval(async() => {
+      let sensorData = (await getSensorsByRoomId(roomId)).filter((sensor) => {
+        return sensor.sensorTypeId.name === "Temperature Sensor" || sensor.sensorTypeId.name === "Sound Sensor" ||
+               sensor.sensorTypeId.name === "Water Level Sensor";
+      });
+      setSensorsList(sensorData);
+      fetchMalfunctions();
+    }, 6000);
+  return () => clearInterval(inret); //This is important
   }, []);
 
 
@@ -257,7 +271,7 @@ function Sensors() {
         }
         <br></br>
         <MDBox p={2} mt="auto">
-          <MDButton
+          {/* <MDButton
               component="button"
               target="_blank"
               rel="noreferrer"
@@ -267,7 +281,7 @@ function Sensors() {
               onClick={fetchData}
             >
               fetch data
-            </MDButton>
+            </MDButton> */}
         </MDBox>
       </MDBox>
       {/* Table */}

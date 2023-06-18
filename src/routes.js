@@ -50,7 +50,7 @@ import Dashboard from "layouts/dashboard";
 const routes = [
   {
     type: "collapse",
-    SideNavVisable: true,
+    SideNavVisable: false,
     name: "Gauges",
     key: "gauges",
     icon: <Icon fontSize="small">speed</Icon>,
@@ -60,7 +60,7 @@ const routes = [
   },
   {
     type: "collapse",
-    SideNavVisable: true,
+    SideNavVisable: false,
     name: "Sensors",
     key: "sensors",
     icon: <Icon fontSize="small">sensors</Icon>,
@@ -80,7 +80,7 @@ const routes = [
   },
   {
     type: "collapse",
-    SideNavVisable: true,
+    SideNavVisable: false,
     name: "Dashboard",
     key: "dashboard",
     icon: <Icon fontSize="small">dashboard</Icon>,

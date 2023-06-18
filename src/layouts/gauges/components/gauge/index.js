@@ -14,13 +14,12 @@ import MDBox from "components/MDBox";
 
 function Gauge(props) {
 
-  const lastJsonMessage = useWebSocketMessages();
-  console.log('Latest WebSocket message:', lastJsonMessage);
+  // const lastJsonMessage = useWebSocketMessages();
 
 
-  useEffect(() => {
-    console.log('WebSocket message:', lastJsonMessage);
-  }, [lastJsonMessage])
+  // useEffect(() => {
+  //   console.log('WebSocket message:', lastJsonMessage);
+  // }, [lastJsonMessage])
 
   // const handleWebSocketMessage = (message) => {
   //   // Do something with the received message
@@ -90,7 +89,8 @@ function Gauge(props) {
         textColor={'#d8dee9'}
       />
         <br/>
-        <div>{props.value_ts}</div>
+        {/* <div>{(props.value_ts || "").split() }</div> */}
+        <div>{new Date(Date.parse(props?.value_ts)).toString().split(" GMT")[0]}</div>
         <br/>
       </div>
     </MDBox>

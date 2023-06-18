@@ -52,12 +52,7 @@ function Gauges() {
   const { roomId } = useParams(); // Retrieve the roomId param from the URL
   const [currentTelemetryEntity, setCurrentTelemetryEntity] = useState(null);
   const [selectedOptions, setSelectedOptions] = useState([]);
-  const options = [
-    { value: 'option1', label: 'Option 1' },
-    { value: 'option2', label: 'Option 2' },
-    { value: 'option3', label: 'Option 3' },
-    // Add more options as needed
-  ];
+
 
   const [controller, dispatch] = useMaterialUIController();
   // const [FromValue, setFrom] = React.useState(new Date('2014-08-18T21:11:54'));
@@ -70,6 +65,7 @@ function Gauges() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [computerList, setComputerList] = useState([]);
 
+  const [telemetryData, setTelemetryData] = useState([]); 
   const [cpu, setCpu] = useState({cpu_data: 70, ts_cpu: ""});
   const [disk, setDisk] = useState({disk_data: 75, ts_disk: ""});
   const [memory, setMemory] = useState({memory_data: 22, ts_memory: ""});
@@ -87,9 +83,7 @@ function Gauges() {
   //                               disk.ts_disk, disk.disk_data, 
   //                               memory.ts_memory, memory.memory_data]);
 
-  const [tbl_rows, setRows] = useState([{ts_cpu:cpu.ts_cpu, cpu:cpu.cpu_data, 
-      ts_disk:disk.ts_disk, disk:disk.disk_data, 
-      ts_memory:memory.ts_memory, memory:memory.memory_data}]);
+  const [tbl_rows, setRows] = useState([{}]);
 
   const fetchData = async () => {
     //get the last line
@@ -103,23 +97,24 @@ function Gauges() {
       //   }
       // }
       // );    
-      const data = await getLastTelemetryData();
-      setResponse(data);
-      console.log(data);
-      setCpu({cpu_data: data.cpu, ts_cpu: data.ts_cpu});
-      setDisk({disk_data: data.disk, ts_disk: data.ts_disk});
-      setMemory({memory_data: data.memory, ts_memory: data.ts_memory});
+      // const data = await getLastTelemetryData();
+      // setResponse(data);
+      // console.log(data);
+      // setCpu({cpu_data: data.cpu, ts_cpu: data.ts_cpu});
+      // setDisk({disk_data: data.disk, ts_disk: data.ts_disk});
+      // setMemory({memory_data: data.memory, ts_memory: data.ts_memory});
 
-      //get Table rows
-      // const rows_response = await fetch("http://localhost:3007/api/updates_table"
-      // , {
-      //   headers: {
-      //     Authorization: `Bearer ${accessToken}`
-      //   }
-      // }
-      // );
-      const rows_data = await getTelemetryTableUpdates();
-      setRows(rows_data);
+      // //get Table rows
+      // // const rows_response = await fetch("http://localhost:3007/api/updates_table"
+      // // , {
+      // //   headers: {
+      // //     Authorization: `Bearer ${accessToken}`
+      // //   }
+      // // }
+      // // );
+      // const rows_data = await getTelemetryTableUpdates();
+      // setRows(rows_data);
+      
     } 
     catch(e){
       setErrorMsg(e.message);
@@ -139,8 +134,8 @@ function Gauges() {
             console.log("computerList: " , data.data);
             setComputerList(data.data);
             setCurrentTelemetryEntity(data.data[0]);
-            fetchLastTelemetryData();
-            fetchTableUpdates();
+            // fetchLastTelemetryData();
+            // fetchTableUpdates();
           }
         }).catch((err) => {
           console.log("err in gauges page: ", err);
@@ -153,25 +148,113 @@ function Gauges() {
       console.log(err);
     }
   }, []);
-  
+
   useEffect(() => {
-    fetchLastTelemetryData();
-    fetchTableUpdates();
+    if(currentTelemetryEntity){
+      console.log("update: " ,currentTelemetryEntity);
+      fetchLastTelemetryData();
+      fetchTableUpdates();
+    }
   }, [currentTelemetryEntity]);
+
+  useEffect(() => {
+    const inret = setInterval(() => {
+      console.log("interval.... with 6 sec" ,currentTelemetryEntity);
+      if(currentTelemetryEntity){
+        fetchLastTelemetryData();
+        fetchTableUpdates();
+      }
+    }, 6000);
+  return () => clearInterval(inret); //This is important
+  }, [currentTelemetryEntity]);
+
+  
+  
+  // useEffect(() => {
+  //   const inter = setInterval(() => {
+  //     if(currentTelemetryEntity){
+  //       fetchLastTelemetryData();
+  //       fetchTableUpdates();
+  //     }
+  //   }, 6000);
+  //   clearInterval(inter);
+  // }, []);
 
   const fetchLastTelemetryData = async () => {
     console.log("currentTelemetryEntity = " , currentTelemetryEntity);
     const data = await getLastTelemetryData(currentTelemetryEntity?._id);
-    setResponse(data);
-    console.log(data);
-    setCpu({cpu_data: data.cpu, ts_cpu: data.ts_cpu});
-    setDisk({disk_data: data.disk, ts_disk: data.ts_disk});
-    setMemory({memory_data: data.memory, ts_memory: data.ts_memory});
+    console.log("data: " , data);
+    let telemetryOnlyData = [];
+    const regex = /percent=(\d+\.\d+)/;
+    data.forEach(el => {
+
+      // Extracting the percentage value using regular expressions
+      const match = el.sensorData.match(regex);
+
+      if (match) {
+        const percentage = parseFloat(match[1]);
+        telemetryOnlyData[el.sensorTypeId.name.split(" ")[0]] = {
+          title: determineGaugeTitle(el.sensorTypeId.name.split(" ")[0]),
+          percentage: percentage,
+          timestamp: el.date
+        }
+      } else {
+        telemetryOnlyData[el.sensorTypeId.name.split(" ")[0]] = {
+          title: determineGaugeTitle(el.sensorTypeId.name.split(" ")[0]),
+          percentage: el.sensorData,
+          timestamp: el.date
+        }
+      }
+    });
+    setTelemetryData(telemetryOnlyData);
+    console.log("x: ", telemetryOnlyData);
+    // setResponse(data);
+    // console.log(data);
+    // setCpu({cpu_data: data.cpu, ts_cpu: data.ts_cpu});
+    // setDisk({disk_data: data.disk, ts_disk: data.ts_disk});
+    // setMemory({memory_data: data.memory, ts_memory: data.ts_memory});
+  }
+
+  const determineGaugeTitle = (name) => {
+    switch(name){
+      case "Cpu":
+        return "CPU Usage";
+      case "Disk":
+        return "Disk Utilization";
+        case "Ram":
+          return "RAM Memory"
+    }
   }
 
   const fetchTableUpdates = async () => {
+    console.log("currentTelemetryEntity?._id: ", currentTelemetryEntity?._id);
     const rows_data = await getTelemetryTableUpdates(currentTelemetryEntity?._id);
-    setRows(rows_data);
+    console.log("table rows ------>", rows_data);
+    const rows = rows_data.map((record) => ({
+      sensorName: record?.sensorId?.sensorTypeId?.name ?? "",
+      recent_data: record?.recent_data ?? "",
+      date: record?.date ?? "",
+      severity: record?.severity ?? "",
+      description: record?.message ?? ""
+    }));
+    setRows(rows);
+
+
+    // console.log("MalfunctionsList data: " + data);
+    // data.sort((a, b) => {
+    //   const dateA = new Date(a.date);
+    //   const dateB = new Date(b.date);
+    //   return dateB - dateA;
+    // });
+    // // setMalfunctionsList(data);
+    // const rows = data.map((malfunction) => ({
+    //   sensorName: malfunction?.sensorId?.sensorTypeId?.name ?? "",
+    //   recent_data: malfunction?.recent_data ?? "",
+    //   date: malfunction?.date ?? "",
+    //   severity: malfunction?.severity ?? "",
+    //   description: malfunction?.message ?? ""
+    // }));
+    // setRows(rows);
   }
 
   const handleClick = (event) => {
@@ -208,31 +291,31 @@ function Gauges() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <div>
-        <MDButton
-                component="button"
-                target="_blank"
-                rel="noreferrer"
-                variant="contained"
-                color={sidenavColor}
-                onClick={handleClick}
-              >
-                Choose Computer
-        </MDButton>
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
-        >
-          {(computerList || [])?.map((computer, index) => (
-            <MenuItem key={index} onClick={() => { handleOptionSelect(computer); handleClose(); }}>{computer?.telemetryEntityName}</MenuItem>
-          ))}
-        </Menu>
-      </div>
       <MDBox style={{display: "flex", justifyContent: "space-between"}}>
-        <Icon fontSize="medium" color="inherit">
-              {"leaderboard"}
-        </Icon>
+        <div>
+          <Icon fontSize="medium" color="inherit">
+                {"leaderboard"}
+          </Icon>
+          <MDButton style={{marginLeft: "20px"}}
+                  component="button"
+                  target="_blank"
+                  rel="noreferrer"
+                  variant="contained"
+                  color={sidenavColor}
+                  onClick={handleClick}
+                >
+                  Choose Computer
+          </MDButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+          >
+            {(computerList || [])?.map((computer, index) => (
+              <MenuItem key={index} onClick={() => { handleOptionSelect(computer); handleClose(); }}>{computer?.telemetryEntityName}</MenuItem>
+            ))}
+          </Menu>
+        </div>
         <Link to={`/${roomId}/sensors`}>
           <MDButton
                 component="button"
@@ -248,14 +331,18 @@ function Gauges() {
       </MDBox>
       <MDBox py={3}>
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6} lg={4}>
-              <Gauge
-                title="CPU Usage"
-                value={cpu.cpu_data}
-                value_ts={cpu.ts_cpu}
-              />
-          </Grid>
-          <Grid item xs={12} md={6} lg={4}>
+          {Object.keys(telemetryData).map((item, index) => {
+            return (
+              <Grid item xs={12} md={6} lg={4} key={index}>
+                <Gauge
+                  title={telemetryData[item]?.title}
+                  value={telemetryData[item]?.percentage}
+                  value_ts={telemetryData[item]?.timestamp}
+                />
+              </Grid>
+            );
+          })}
+          {/* <Grid item xs={12} md={6} lg={4}>
             <Gauge
                   title="Disk Utilization"
                   value={disk.disk_data}
@@ -268,9 +355,9 @@ function Gauges() {
                   value={memory.memory_data}
                   value_ts={memory.ts_memory}
                 />
-          </Grid>
+          </Grid> */}
         </Grid>
-        <MDBox p={2} mt="auto">
+        {/* <MDBox p={2} mt="auto">
           <MDButton
               component="button"
               target="_blank"
@@ -282,7 +369,7 @@ function Gauges() {
             >
               fetch data
             </MDButton>
-        </MDBox>
+        </MDBox> */}
       </MDBox>
 
       {/* Time pickers */}
@@ -312,8 +399,10 @@ function Gauges() {
             // }}
           />
         </MuiPickersUtilsProvider> */}
-        <MDInput type="datetime"  label="Start Time"/>
-        <MDInput type="datetime" label="End Time"  />
+
+
+        {/* <MDInput type="datetime"  label="Start Time"/>
+        <MDInput type="datetime" label="End Time"  /> */}
       </MDBox>
 
       {/* Table */}

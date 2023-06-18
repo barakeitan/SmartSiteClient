@@ -115,7 +115,7 @@ export const getSensorsByRoomId = async (roomId) => {
   }
 };
 
-export const getSensorsBySensorId = async (sensorId) => {
+export const getSensorRecordsBySensorId = async (sensorId) => {
   try {
     const response = await axios.get(`${API}/record/${sensorId}`, {
       headers: {

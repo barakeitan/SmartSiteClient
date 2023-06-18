@@ -19,7 +19,7 @@ import {
   import Grid from "@mui/material/Grid";
 import './Sensors.css';
 import  { useWebSocketMessages }  from '../../../../services/WebSocketProvider';
-import { getSensorsBySensorId } from '../../../../services/index';
+import { getSensorRecordsBySensorId } from '../../../../services/index';
 
 const generateChartData = (selectedFilter, minData, maxData, label) => {
     const currentDate = new Date();
@@ -102,8 +102,8 @@ const generateChartData = (selectedFilter, minData, maxData, label) => {
 
 function Sensor(props) {
 
-    const lastJsonMessage = useWebSocketMessages();
-    console.log('Latest WebSocket message:', lastJsonMessage);
+    // const lastJsonMessage = useWebSocketMessages();
+    // console.log('Latest WebSocket message:', lastJsonMessage);
 
     const [statusColor, setStatusColor] = useState('green');
     const [filter, setFilter] = useState('Week');
@@ -118,7 +118,7 @@ function Sensor(props) {
   
   const fetchData = async (filter) => {
     try {
-      let sensorRecordData = await getSensorsBySensorId(props.id);
+      let sensorRecordData = await getSensorRecordsBySensorId(props.id);
       const filteredList = removeDuplications(sensorRecordData);
       const chartData = filterData(filteredList, filter);
       setChartData(chartData);
@@ -155,10 +155,10 @@ function Sensor(props) {
       endDate.setHours(currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds());
     } else if (filter === 'Week') {
       startDate = new Date(currentDate);
-      startDate.setDate(currentDate.getDate() - currentDate.getDay());
+      startDate.setDate(currentDate.getDate() - 7);
 
       endDate = new Date(currentDate);
-      endDate.setDate(startDate.getDate() + 6);
+      // endDate.setDate(startDate.getDate() + 6);
     } else if (filter === 'Month') {
       startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
       endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
@@ -170,29 +170,32 @@ function Sensor(props) {
 
     const labels = [];
     const sensorData = [];
-    data.sort((a, b) => new Date(a.date) - new Date(b.date));
-    const filteredData = data.filter((item) => {
-      const itemDate = converToUtcTime(item.date);
+    data?.sort((a, b) => new Date(a.date) - new Date(b.date));
+    const filteredData = data?.filter((item) => {
+      const itemDate = converToUtcTime(item?.date);
       return itemDate >= startDate && itemDate <= endDate;
     });
     let index = 0;
-    let current = converToUtcTime(filteredData[index]?.date);
-  
-    while (current.getTime() <= endDate.getTime()) {
-      if (filter === 'Today') {
-          const hours = current.getHours().toString().padStart(2, '0');
-          const minutes = current.getMinutes().toString().padStart(2, '0');
-          labels.push(`${hours}:${minutes}`);
-      } else if(filter == "Week"){
+    if(filteredData.length > 0) {
+      let current = converToUtcTime(filteredData[index]?.date);
+    
+      while (current?.getTime() <= endDate.getTime()) {
+        if (filter === 'Today') {
+            const hours = current.getHours().toString().padStart(2, '0');
+            const minutes = current.getMinutes().toString().padStart(2, '0');
+            labels.push(`${hours}:${minutes}`);
+        } else if(filter == "Week"){
           labels.push(current.toLocaleDateString());
-      } else if(filter == "Month") {
-          labels.push(`${current.getMonth() + 1}/${current.getDate()}`);
-      } else if(filter == "Year") {
-          labels.push(current.toLocaleDateString('default', { month: 'short' }));
+          // !(labels.indexOf(current.toLocaleDateString()) > -1) ? labels.push(current.toLocaleDateString()): null;
+        } else if(filter == "Month") {
+            labels.push(`${current.getMonth() + 1}/${current.getDate()}`);
+        } else if(filter == "Year") {
+            labels.push(current.toLocaleDateString('default', { month: 'short' }));
+        }
+        sensorData.push(filteredData[index].sensorData);
+        index++;
+        current = converToUtcTime(filteredData[index]?.date);
       }
-      sensorData.push(filteredData[index].sensorData);
-      index++;
-      current = converToUtcTime(filteredData[index]?.date);
     }
 
     return {
@@ -200,7 +203,7 @@ function Sensor(props) {
       datasets: [{
           fill: true,
           label: props.label,
-          data: sensorData,
+          data: sensorData || [],
           borderColor: ["rgb(53, 162, 255)", "rgba(255, 99, 132, 1)"],
           backgroundColor: ["rgba(53, 162, 235, 0.5)", "rgba(255, 99, 132, 0.5)"]
       }]
