@@ -123,12 +123,13 @@ function Sensors() {
                 return dateB - dateA;
               });
               // setMalfunctionsList(data);
+              console.log(data[0]['malfunctionTypeId']['riskDescription']);
               const rows = data.map((malfunction) => ({
                 sensorName: malfunction?.sensorId?.sensorTypeId?.name ?? "",
                 recent_data: malfunction?.recent_data ?? "",
                 date: malfunction?.date ?? "",
                 severity: malfunction?.severity ?? "",
-                description: malfunction?.message ?? ""
+                message: malfunction?.malfunctionTypeId?.riskDescription +". " + malfunction?.message ?? ""
               }));
               setRows(rows);
           }
