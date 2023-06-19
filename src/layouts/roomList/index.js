@@ -80,7 +80,7 @@ function RoomList(props) {
             {rooms.length == 0 ? 
             <div><h1>No rooms yet</h1></div>
             : rooms.map((room, index) => (
-                <Grid item xs={4} key={index}>
+                <Grid item lg={3} key={index}>
                 {/* <Grid item xs={4}> */}
                     <Room
                         status={room.status}

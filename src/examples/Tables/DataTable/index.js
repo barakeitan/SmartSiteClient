@@ -47,6 +47,8 @@ function DataTable({
   pagination,
   isSorted,
   noEndBorder,
+  currentPage,
+  handlePageChange
   // enableSelectBox
 }) {
   const defaultValue = entriesPerPage.defaultValue ? entriesPerPage.defaultValue : 10;
@@ -101,7 +103,8 @@ function DataTable({
 
   // Handler for the input to set the pagination index
   const handleInputPagination = ({ target: { value } }) =>
-    value > pageOptions.length || value < 0 ? gotoPage(0) : gotoPage(Number(value));
+    value > pageOptions.length || value < 0 ? gotoPage(0) : (currentPage ? gotoPage(Number(currentPage)) :
+    (handlePageChange(value), gotoPage(Number(value))));
 
   // Customized page options starting from 1
   const customizedPageOptions = pageOptions.map((option) => option + 1);

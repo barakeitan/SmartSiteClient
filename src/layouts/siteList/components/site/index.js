@@ -54,8 +54,8 @@ function Site(props) {
     }, [props]);
 
   return (
-    <Link to={`/${props.siteId}/rooms`}>
-        <Card className={classes.root}>
+      <Card className={classes.root} >
+            <Link to={`/${props.siteId}/rooms`}>
             {/* <div onClick={() => handleClick()}> */}
                 <CardMedia style={{borderTopLeftRadius: "10px", borderTopRightRadius: "10px"}}
                     className={classes.media}
@@ -76,8 +76,8 @@ function Site(props) {
                     </CardContent>
                 {/* </div> */}
             {/* </div> */}
+            </Link>
         </Card>
-    </Link>
   );
 }
 // style={{color: colorMode}}

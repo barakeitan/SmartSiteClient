@@ -17,6 +17,27 @@ import  { useWebSocketMessages }  from '../../services/WebSocketProvider';
 import Site from './components/site/index';
 import { API } from '../../config';
 import { getAllSites } from '../../services/index';
+import BasicLayout from "layouts/authentication/components/BasicLayout";
+import CoverLayout from "layouts/authentication/components/CoverLayout";
+
+import bgImage from "assets/images/bg-sign-in-basic.jpeg";
+
+// const styles = {
+//     dashboardContainer: {
+//       backgroundImage: 'url("../../../../assets/images/bg-sign-in-basic.jpeg")',
+//       backgroundSize: 'cover',
+//       backgroundRepeat: 'no-repeat',
+//     },
+//     // Other styles...
+//   };
+//className={classes.root}
+//   const useStyles = makeStyles({
+//     dashboardContainer: {
+//         backgroundImage: 'url("../../../../assets/images/bg-sign-in-basic.jpeg")',
+//         backgroundSize: 'cover',
+//         backgroundRepeat: 'no-repeat',
+//       }
+//   });
 
 function SiteList(props) {
 
@@ -24,6 +45,7 @@ function SiteList(props) {
     const [errorSB, setErrorSB] = useState(false);
     const [errorMsg, setErrorMsg] = useState(null);
     const closeErrorSB = () => setErrorSB(false);
+    // const classes = useStyles();
 
     const fetchSites = () => {
         getAllSites().then((data) => {
@@ -62,14 +84,13 @@ function SiteList(props) {
     );
 
   return (
-    <DashboardLayout>
-      <DashboardNavbar />
+<DashboardLayout>
+    <DashboardNavbar />
         <Grid container spacing={2}>
             {sites.length == 0 ? 
             <div><h1>No sites yet</h1></div>
             : sites.map((site, index) => (
-                 <Grid item xs={4} key={index}>
-                 {/* <Grid item xs={4}> */}
+                <Grid item xs={3} key={index}>
                     <Site
                             siteId={site._id}
                             status={site.status}

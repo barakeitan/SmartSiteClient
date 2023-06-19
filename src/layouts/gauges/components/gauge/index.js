@@ -26,8 +26,8 @@ function Gauge(props) {
   //   console.log('Received message:', message);
   // };
 
-  
 
+  
   return (
     <MDBox mb={3}>
         <div className="gauge" style={{"display": "flex", "flexDirection": "column", "alignItems": "center"}}>
@@ -52,7 +52,10 @@ function Gauge(props) {
         minValue={0}
         maxValue={100}
         value={props.value}
-        currentValueText={props.title + " : " + props.value}
+        currentValueText={
+          
+          props.title + " : " + props.value 
+        }
         customSegmentStops={[0,75,90,100]}
         // segmentColors={['rgb(106, 215, 45)','rgb(174, 226, 40)','rgb(236, 219, 35)','rgb(246, 150, 30)','rgb(255, 71, 26)']}
         segmentColors={['rgb(106, 215, 45)', 'rgb(236, 219, 35)','rgb(255, 71, 26)']}
@@ -88,9 +91,10 @@ function Gauge(props) {
         needleTransitionDuration={3333}
         needleTransition="easeElastic"
         needleColor={'#90f2ff'}
-        textColor={'#d8dee9'}
+        textColor={'linear-gradient(195deg, #49a3f1, #1A73E8)'}
+        
       />
-        <br/>
+        {/* <br/> */}
         {/* <div>{(props.value_ts || "").split() }</div> */}
         <div>{new Date(Date.parse(props?.value_ts)).toString().split(" GMT")[0]}</div>
         <br/>

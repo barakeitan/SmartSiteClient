@@ -48,6 +48,7 @@ function Sensors() {
   const { roomId } = useParams(); // Retrieve the roomId param from the URL
   // const [malfunctionsList, setMalfunctionsList] = useState([{}]);
   const [sensorsList, setSensorsList] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1); // Store current page number
 
   const tbl_cols = useMemo(() => [
         { Header: "Sensor", accessor: "sensorName" },
@@ -58,65 +59,13 @@ function Sensors() {
       ], []);
   const [tbl_rows, setRows] = useState([{}]);
 
-  const fetchData = async () => {
-    //try{
-    //   await handleRefreshTokenValidation();
-    //   const accessToken = localStorage.getItem('accessToken');
-    //   const response = await fetch("http://localhost:3007/api/telemetry", {
-    //     headers: {
-    //       Authorization: `Bearer ${accessToken}`
-    //     }
-    //   });    
-    //   const data = await response.json();
-    //   setResponse(data);
-    //   console.log(data);
-    //   setCpu({cpu_data: data.cpu, ts_cpu: data.ts_cpu});
-    //   setDisk({disk_data: data.disk, ts_disk: data.ts_disk});
-    //   setMemory({memory_data: data.memory, ts_memory: data.ts_memory});
-
-    //   setRows([{
-    //     cpu_data: "7.89",
-    //     ts_cpu: "[2023-03-28T19:56:49.3559798Z]",
-    //     disk_data: "3.2",
-    //     ts_disk: "[2023-03-28T19:56:49.3559798Z]",
-    //     memory_data: "10.1",
-    //     ts_memory: "[2023-03-28T19:56:49.3559798Z]"
-    //   },{
-    //     cpu_data: "3.21",
-    //     ts_cpu: "[2023-03-28T19:56:50.3559798Z]",
-    //     disk_data: "3.2",
-    //     ts_disk: "[2023-03-28T19:56:50.3559798Z]",
-    //     memory_data: "16.789",
-    //     ts_memory: "[2023-03-28T19:56:50.3559798Z]"
-    //   },{
-    //     cpu_data: "17.463",
-    //     ts_cpu: "[2023-03-28T19:57:49.3559798Z]",
-    //     disk_data: "1.77",
-    //     ts_disk: "[2023-03-28T19:57:49.3559798Z]",
-    //     memory_data: "9.486",
-    //     ts_memory: "[2023-03-28T19:57:49.3559798Z]"
-    //   },{
-    //     cpu_data: "4.786",
-    //     ts_cpu: "[2023-03-28T19:58:49.3559798Z]",
-    //     disk_data: "1.8",
-    //     ts_disk: "[2023-03-28T19:58:49.3559798Z]",
-    //     memory_data: "3.74",
-    //     ts_memory: "[2023-03-28T19:58:49.3559798Z]"
-    //   }]);
-    // } catch(e){
-    //   setErrorMsg(e.message);
-    //   setErrorSB(true);
-    // }
-    
-  };
-
   const fetchMalfunctions = () => {
     getAllMalfunctionsByRoomId(roomId).then((data) => {
           if (data?.error) {
           setErrorMsg(data.error);
           setErrorSB(true);
           } else {
-              console.log("MalfunctionsList data: " + data);
+              console.log("MalfunctionsList data:!!!!!!!!!!!! " + data);
               data.sort((a, b) => {
                 const dateA = new Date(a.date);
                 const dateB = new Date(b.date);
@@ -137,7 +86,6 @@ function Sensors() {
   };
 
   useEffect(async () => {
-    
     let sensorData = (await getSensorsByRoomId(roomId)).filter((sensor) => {
       return sensor.sensorTypeId.name === "Temperature Sensor" || sensor.sensorTypeId.name === "Sound Sensor" ||
              sensor.sensorTypeId.name === "Water Level Sensor";
@@ -158,36 +106,11 @@ function Sensors() {
   return () => clearInterval(inret); //This is important
   }, []);
 
-
-  // setRows([{
-                //   cpu_data: "7.89",
-                //   ts_cpu: "[2023-03-28T19:56:49.3559798Z]",
-                //   disk_data: "3.2",
-                //   ts_disk: "[2023-03-28T19:56:49.3559798Z]",
-                //   memory_data: "10.1",
-                //   ts_memory: "[2023-03-28T19:56:49.3559798Z]"
-                // },{
-                //   cpu_data: "3.21",
-                //   ts_cpu: "[2023-03-28T19:56:50.3559798Z]",
-                //   disk_data: "3.2",
-                //   ts_disk: "[2023-03-28T19:56:50.3559798Z]",
-                //   memory_data: "16.789",
-                //   ts_memory: "[2023-03-28T19:56:50.3559798Z]"
-                // },{
-                //   cpu_data: "17.463",
-                //   ts_cpu: "[2023-03-28T19:57:49.3559798Z]",
-                //   disk_data: "1.77",
-                //   ts_disk: "[2023-03-28T19:57:49.3559798Z]",
-                //   memory_data: "9.486",
-                //   ts_memory: "[2023-03-28T19:57:49.3559798Z]"
-                // },{
-                //   cpu_data: "4.786",
-                //   ts_cpu: "[2023-03-28T19:58:49.3559798Z]",
-                //   disk_data: "1.8",
-                //   ts_disk: "[2023-03-28T19:58:49.3559798Z]",
-                //   memory_data: "3.74",
-                //   ts_memory: "[2023-03-28T19:58:49.3559798Z]"
-                // }]);
+  // Function to handle page change
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+  
 
   const renderErrorSB = (
     <MDSnackbar
@@ -308,6 +231,8 @@ function Sensors() {
               isSorted={false}
               entriesPerPage={{ defaultValue: 10, entries: [5, 10, 15, 20, 25] }}
               showTotalEntries={true}
+              currentPage={currentPage}
+              handlePageChange={handlePageChange}
               noEndBorder
             />
           </MDBox>

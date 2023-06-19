@@ -45,7 +45,6 @@ import { handleRefreshTokenValidation, getComputersByRoomId, getLastTelemetryDat
 
 function Gauges() {
 
-  const [response, setResponse] = useState(null);
   const [errorSB, setErrorSB] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const closeErrorSB = () => setErrorSB(false);
@@ -75,52 +74,10 @@ function Gauges() {
                             {Header:"DISK Usage", accessor:"disk"},
                             {Header:"MEMORY TimeStamp", accessor:"ts_memory"},
                             {Header:"MEMORY Usage", accessor:"memory"}],[]);
-  // const tbl_rows = useMemo(()=>[cpu.ts_cpu, cpu.cpu_data, 
-  //                               disk.ts_disk, disk.disk_data, 
-  //                               memory.ts_memory, memory.memory_data],
-                                
-  //                               [cpu.ts_cpu, cpu.cpu_data, 
-  //                               disk.ts_disk, disk.disk_data, 
-  //                               memory.ts_memory, memory.memory_data]);
 
   const [tbl_rows, setRows] = useState([{}]);
 
-  const fetchData = async () => {
-    //get the last line
-    try{
-      // await handleRefreshTokenValidation();
-      // const accessToken = localStorage.getItem('accessToken');
-      // const response = await fetch("http://localhost:3007/api/last"
-      // , {
-      //   headers: {
-      //     Authorization: `Bearer ${accessToken}`
-      //   }
-      // }
-      // );    
-      // const data = await getLastTelemetryData();
-      // setResponse(data);
-      // console.log(data);
-      // setCpu({cpu_data: data.cpu, ts_cpu: data.ts_cpu});
-      // setDisk({disk_data: data.disk, ts_disk: data.ts_disk});
-      // setMemory({memory_data: data.memory, ts_memory: data.ts_memory});
-
-      // //get Table rows
-      // // const rows_response = await fetch("http://localhost:3007/api/updates_table"
-      // // , {
-      // //   headers: {
-      // //     Authorization: `Bearer ${accessToken}`
-      // //   }
-      // // }
-      // // );
-      // const rows_data = await getTelemetryTableUpdates();
-      // setRows(rows_data);
-      
-    } 
-    catch(e){
-      setErrorMsg(e.message);
-      setErrorSB(true);
-    }
-  };
+  
 
   useEffect(() => {
     try {
@@ -151,7 +108,6 @@ function Gauges() {
 
   useEffect(() => {
     if(currentTelemetryEntity){
-      console.log("update: " ,currentTelemetryEntity);
       fetchLastTelemetryData();
       fetchTableUpdates();
     }
@@ -159,7 +115,6 @@ function Gauges() {
 
   useEffect(() => {
     const inret = setInterval(() => {
-      console.log("interval.... with 6 sec" ,currentTelemetryEntity);
       if(currentTelemetryEntity){
         fetchLastTelemetryData();
         fetchTableUpdates();
@@ -181,9 +136,7 @@ function Gauges() {
   // }, []);
 
   const fetchLastTelemetryData = async () => {
-    console.log("currentTelemetryEntity = " , currentTelemetryEntity);
     const data = await getLastTelemetryData(currentTelemetryEntity?._id);
-    console.log("data: " , data);
     let telemetryOnlyData = [];
     const regex = /percent=(\d+\.\d+)/;
     data.forEach(el => {
@@ -207,12 +160,6 @@ function Gauges() {
       }
     });
     setTelemetryData(telemetryOnlyData);
-    console.log("x: ", telemetryOnlyData);
-    // setResponse(data);
-    // console.log(data);
-    // setCpu({cpu_data: data.cpu, ts_cpu: data.ts_cpu});
-    // setDisk({disk_data: data.disk, ts_disk: data.ts_disk});
-    // setMemory({memory_data: data.memory, ts_memory: data.ts_memory});
   }
 
   const determineGaugeTitle = (name) => {
@@ -226,35 +173,40 @@ function Gauges() {
     }
   }
 
+  const convertToLocalTime = (utcDate) => {
+    const localDate = new Date(Date.parse(utcDate)).toString().split(" GMT")[0];
+    return localDate.toString(); // Modify options as per your requirement
+  };
+
+  const convertTableUpdates = async (rows_data, resArr) => {
+    const cpuSensorRecords = rows_data.cpu.length > 0 ? rows_data.cpu.shift() : null;
+    const diskSensorRecords = rows_data.disk.length > 0 ? rows_data.disk.shift() : null;
+    const memorySensorRecords = rows_data.memory.length > 0 ? rows_data.memory.shift(): null;
+
+    if(!cpuSensorRecords || !diskSensorRecords || !memorySensorRecords){
+      return resArr;
+    }
+
+      resArr.push({
+        ts_cpu:  cpuSensorRecords ? convertToLocalTime(cpuSensorRecords?.date) : "",
+        cpu: cpuSensorRecords ? cpuSensorRecords?.sensorData : "",
+        ts_disk: diskSensorRecords ? convertToLocalTime(diskSensorRecords?.date) : "",
+        disk: diskSensorRecords ? diskSensorRecords?.sensorData : "",
+        ts_memory: memorySensorRecords ? convertToLocalTime(memorySensorRecords?.date) : "",
+        memory: memorySensorRecords ? memorySensorRecords?.sensorData : ""
+      })
+    convertTableUpdates(rows_data, resArr);
+  }
+
   const fetchTableUpdates = async () => {
     console.log("currentTelemetryEntity?._id: ", currentTelemetryEntity?._id);
     const rows_data = await getTelemetryTableUpdates(currentTelemetryEntity?._id);
     console.log("table rows ------>", rows_data);
-    const rows = rows_data.map((record) => ({
-      sensorName: record?.sensorId?.sensorTypeId?.name ?? "",
-      recent_data: record?.recent_data ?? "",
-      date: record?.date ?? "",
-      severity: record?.severity ?? "",
-      description: record?.message ?? ""
-    }));
-    setRows(rows);
 
+    let newRowsArr = []
+    await convertTableUpdates(rows_data, newRowsArr);
 
-    // console.log("MalfunctionsList data: " + data);
-    // data.sort((a, b) => {
-    //   const dateA = new Date(a.date);
-    //   const dateB = new Date(b.date);
-    //   return dateB - dateA;
-    // });
-    // // setMalfunctionsList(data);
-    // const rows = data.map((malfunction) => ({
-    //   sensorName: malfunction?.sensorId?.sensorTypeId?.name ?? "",
-    //   recent_data: malfunction?.recent_data ?? "",
-    //   date: malfunction?.date ?? "",
-    //   severity: malfunction?.severity ?? "",
-    //   description: malfunction?.message ?? ""
-    // }));
-    // setRows(rows);
+    setRows(newRowsArr);
   }
 
   const handleClick = (event) => {
