@@ -59,6 +59,11 @@ function Sensors() {
       ], []);
   const [tbl_rows, setRows] = useState([{}]);
 
+  // const convertToLocalTime = (utcDate) => {
+  //   const localDate = new Date(Date.parse(utcDate)).toString().split(" GMT")[0];
+  //   return localDate.toString(); // Modify options as per your requirement
+  // };
+
   const fetchMalfunctions = () => {
     getAllMalfunctionsByRoomId(roomId).then((data) => {
           if (data?.error) {
@@ -66,7 +71,7 @@ function Sensors() {
           setErrorSB(true);
           } else {
               console.log("MalfunctionsList data:!!!!!!!!!!!! " + data);
-              data.sort((a, b) => {
+              data?.sort((a, b) => {
                 const dateA = new Date(a.date);
                 const dateB = new Date(b.date);
                 return dateB - dateA;
@@ -78,7 +83,7 @@ function Sensors() {
                 recent_data: malfunction?.recent_data ?? "",
                 date: malfunction?.date ?? "",
                 severity: malfunction?.severity ?? "",
-                message: malfunction?.malfunctionTypeId?.riskDescription +". " + malfunction?.message ?? ""
+                message: (malfunction?.malfunctionTypeId?.riskDescription == "unde") +". " + malfunction?.message ?? ""
               }));
               setRows(rows);
           }

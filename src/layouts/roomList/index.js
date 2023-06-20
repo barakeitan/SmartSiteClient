@@ -54,10 +54,10 @@ function RoomList(props) {
       }, [siteId]);
 
     useEffect(() => {
-    const inret = setInterval(async() => {
-      fetchRooms();
-    }, 3000);
-    return () => clearInterval(inret); //This is important
+      const inret = setInterval(async() => {
+        fetchRooms();
+      }, 3000);
+      return () => clearInterval(inret); //This is important
     }, [siteId]);
 
     const renderErrorSB = (
@@ -83,10 +83,10 @@ function RoomList(props) {
                 <Grid item lg={3} key={index}>
                 {/* <Grid item xs={4}> */}
                     <Room
-                        status={room.status}
-                        imagePath={room.imagePath}
-                        name={room.name}
-                        roomId={room._id}
+                        status={room?.status}
+                        imagePath={room?.imagePath}
+                        name={room?.name}
+                        roomId={room?._id}
                         />
                 </Grid>
             ))}

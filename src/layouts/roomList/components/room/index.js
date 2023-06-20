@@ -38,7 +38,7 @@ function Room(props) {
 
 
     useEffect(() => {
-        switch(props.status){
+        switch(props?.status){
             case "1":
                 setStatusColor('green');
                 break;

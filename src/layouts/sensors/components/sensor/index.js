@@ -172,12 +172,16 @@ function Sensor(props) {
     const sensorData = [];
     data?.sort((a, b) => new Date(a.date) - new Date(b.date));
     const filteredData = data?.filter((item) => {
-      const itemDate = converToUtcTime(item?.date);
-      return itemDate >= startDate && itemDate <= endDate;
+      //const itemDate = converToUtcTime(item?.date);
+      let x = new Date(item?.date) >= startDate && new Date(item?.date) <= endDate;
+
+      return x;
     });
     let index = 0;
     if(filteredData.length > 0) {
-      let current = converToUtcTime(filteredData[index]?.date);
+      // let current = converToUtcTime(filteredData[index]?.date);
+      let current = new Date(filteredData[index]?.date);
+
     
       while (current?.getTime() <= endDate.getTime()) {
         if (filter === 'Today') {
@@ -194,7 +198,8 @@ function Sensor(props) {
         }
         sensorData.push(filteredData[index].sensorData);
         index++;
-        current = converToUtcTime(filteredData[index]?.date);
+        // current = converToUtcTime(filteredData[index]?.date);
+        current = new Date(filteredData[index]?.date);
       }
     }
 
