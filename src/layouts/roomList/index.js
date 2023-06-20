@@ -49,6 +49,10 @@ function RoomList(props) {
       });
     };
 
+    // useEffect(() => {
+    //   fetchRooms();
+    // }, []);
+
     useEffect(() => {
         fetchRooms();
       }, [siteId]);

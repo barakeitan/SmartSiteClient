@@ -83,7 +83,8 @@ function Sensors() {
                 recent_data: malfunction?.recent_data ?? "",
                 date: malfunction?.date ?? "",
                 severity: malfunction?.severity ?? "",
-                message: (malfunction?.malfunctionTypeId?.riskDescription == "unde") +". " + malfunction?.message ?? ""
+                message: (malfunction?.malfunctionTypeId?.riskDescription != "undefined" ? 
+                          malfunction?.malfunctionTypeId?.riskDescription + ". ": "") + malfunction?.message ?? ""
               }));
               setRows(rows);
           }
