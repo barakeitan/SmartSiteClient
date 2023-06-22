@@ -142,6 +142,45 @@ function Sensor(props) {
     return filteredList;
   }
 
+  // const removeDuplications = (sensorRecordData) => {
+  //   // Set to store unique date fields
+  //   const uniqueDates = new Set();
+  //   console.log("sensorRecordData ----:: ", sensorRecordData);
+
+  //   // Filter the list, removing objects with duplicate date fields
+  //   const filteredList = sensorRecordData.filter(obj => {
+  //     if (uniqueDates.has(obj.date)) {
+  //         // uniqueDates.delete(obj);
+  //         // uniqueDates.add(obj); // Add the date to the set
+  //       return false; // Duplicate date, exclude the object from the list
+  //     } else {
+  //       uniqueDates.add(obj); // Add the date to the set
+  //       return true; // Unique date, include the object in the list
+  //     }
+  //   });
+
+
+    // sensorRecordData.forEach(obj => {
+    //   if (uniqueDates.has(obj.date)) {
+    //       uniqueDates.delete(obj);
+    //       uniqueDates.add(obj); // Add the date to the set
+    //     // return false; // Duplicate date, exclude the object from the list
+    //   } else {
+    //     uniqueDates.add(obj); // Add the date to the set
+    //     // return true; // Unique date, include the object in the list
+    //   }
+    // });
+    // const filteredList = sensorRecordData.filter(obj=>{
+    //   if(uniqueDates.has(obj._id)){
+    //     return true;
+    //   }
+    //   return false;
+    // })
+
+
+  //   return filteredList;
+  // }
+
 
   // Filter the data based on the selected filter
   const filterData = (data, filter) => {
@@ -173,17 +212,20 @@ function Sensor(props) {
     data?.sort((a, b) => new Date(a.date) - new Date(b.date));
     const filteredData = data?.filter((item) => {
       //const itemDate = converToUtcTime(item?.date);
-      let x = new Date(item?.date) >= startDate && new Date(item?.date) <= endDate;
+      const itemDate = new Date(new Date(item?.date).setHours(new Date(item?.date).getHours() - 3));
+      let x = itemDate >= startDate && itemDate <= endDate;
 
       return x;
     });
+    // let index = (filteredData.length > 0 ? filteredData.length - 1 : 0);
     let index = 0;
     if(filteredData.length > 0) {
       // let current = converToUtcTime(filteredData[index]?.date);
-      let current = new Date(filteredData[index]?.date);
+      // let current = new Date(filteredData[index]?.date);
+      let current = new Date(new Date(filteredData[index]?.date).setHours(new Date(filteredData[index]?.date).getHours() - 3));
 
     
-      while (current?.getTime() <= endDate.getTime()) {
+      while (current <= endDate) {
         if (filter === 'Today') {
             const hours = current.getHours().toString().padStart(2, '0');
             const minutes = current.getMinutes().toString().padStart(2, '0');
@@ -199,7 +241,9 @@ function Sensor(props) {
         sensorData.push(filteredData[index].sensorData);
         index++;
         // current = converToUtcTime(filteredData[index]?.date);
-        current = new Date(filteredData[index]?.date);
+        // current = new Date(filteredData[index]?.date);
+        current = new Date(new Date(filteredData[index]?.date).setHours(new Date(filteredData[index]?.date).getHours() - 3));
+
       }
     }
 
@@ -241,7 +285,7 @@ function Sensor(props) {
             setStatusColor('green');
             break;
     }
-}, [props]);
+  }, [props]);
 
   ChartJS.register(
     CategoryScale,
